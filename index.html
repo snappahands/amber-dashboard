@@ -93,20 +93,52 @@ body{display:flex;flex-direction:column;height:100vh}
 .full-card.notes .card-title{color:#79c0ff}
 
 /* EDITABLE */
-[contenteditable]{outline:none;border-radius:4px;transition:background .15s, box-shadow .15s;cursor:text;min-width:20px;display:inline-block}
-[contenteditable]:hover{background:rgba(126,207,224,0.06)}
-[contenteditable]:focus{background:rgba(126,207,224,0.1);box-shadow:0 0 0 1px rgba(126,207,224,0.4);padding:1px 4px}
-.editable-inline{font-size:12px;color:#c9d1d9;text-align:right;word-break:break-word;line-height:1.4}
-.editable-inline:empty:before{content:attr(data-placeholder);color:#484f58}
-.editable-multi{font-size:13px;color:#c9d1d9;line-height:1.65;white-space:pre-wrap;display:block;width:100%}
-.editable-multi:empty:before{content:attr(data-placeholder);color:#484f58}
-.editable-metric{font-size:20px;font-weight:700;display:inline-block}
+[contenteditable]{outline:none;border-radius:4px;transition:background .12s,box-shadow .12s,border-color .12s;cursor:text;min-width:24px}
+[contenteditable]:focus{background:rgba(126,207,224,0.08);box-shadow:0 0 0 2px rgba(126,207,224,0.5);border-radius:4px}
 
-/* YES/NO coloring on inline editables */
+/* inline (single-line values in info rows) */
+.editable-inline{
+  display:inline-block;font-size:12px;color:#c9d1d9;text-align:right;
+  word-break:break-word;line-height:1.4;
+  border-bottom:1px dashed #30363d;padding:1px 2px;
+  min-width:28px;
+}
+.editable-inline:hover{border-bottom-color:#7ecfe0;background:rgba(126,207,224,0.06)}
+.editable-inline:focus{border-bottom-color:transparent}
+.editable-inline:empty::before{content:attr(data-placeholder);color:#484f58;font-style:italic}
+
+/* multi-line (large text blocks) */
+.editable-multi{
+  display:block;width:100%;font-size:13px;color:#c9d1d9;
+  line-height:1.65;white-space:pre-wrap;
+  border:1px dashed #21262d;border-radius:6px;padding:6px 8px;
+}
+.editable-multi:hover{border-color:#7ecfe0;background:rgba(126,207,224,0.04)}
+.editable-multi:focus{border-color:rgba(126,207,224,0.5);background:rgba(126,207,224,0.06)}
+.editable-multi:empty::before{content:attr(data-placeholder);color:#484f58;font-style:italic}
+
+/* metric value inline */
+.metric-value[contenteditable]{
+  display:block;border-bottom:1px dashed #30363d;padding:1px 2px;
+}
+.metric-value[contenteditable]:hover{border-bottom-color:#7ecfe0}
+.metric-value[contenteditable]:focus{border-bottom-color:transparent}
+.metric-value.empty[contenteditable]::before{content:'—';color:#484f58}
+.metric-value.empty[contenteditable]:focus::before{content:''}
+
+/* builder name editable */
+.b-name[contenteditable]{border-bottom:1px dashed #30363d}
+.b-name[contenteditable]:hover{border-bottom-color:#7ecfe0}
+.b-name[contenteditable]:focus{border-bottom-color:transparent}
+
+/* YES/NO coloring */
 .editable-inline.yes{color:#3fb950}
 .editable-inline.no{color:#f85149}
 .editable-inline.tbd{color:#f0a500}
 .editable-inline.partial{color:#e3b341}
+
+/* VERSION BADGE */
+#version-badge{position:fixed;bottom:10px;right:14px;font-size:10px;color:#484f58;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:2px 8px;z-index:100;pointer-events:none}
 
 /* TOKEN MODAL */
 #token-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center}
@@ -150,6 +182,8 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="sidebar"></div>
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
+
+<div id="version-badge">v1.2</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -277,9 +311,8 @@ function eMulti(idx, field, placeholder=''){
 
 function eMetric(idx, field, cls=''){
   const val=BUILDERS[idx][field]||'';
-  return val
-    ? `<div class="metric-value ${cls} editable-inline" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" oninput="onEdit(this)">${esc(val)}</div>`
-    : `<div class="metric-value empty editable-inline" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" data-placeholder="—" oninput="onEdit(this)"></div>`;
+  const empty=!val;
+  return `<div class="metric-value${empty?' empty':''} ${cls}" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" oninput="onEdit(this)">${esc(val)}</div>`;
 }
 
 /* ── RENDER DETAIL ── */
