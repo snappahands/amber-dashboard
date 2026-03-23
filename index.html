@@ -17,6 +17,15 @@ body{display:flex;flex-direction:column;height:100vh}
 #search:focus{border-color:#7ecfe0}
 #filter-bse{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:6px 10px;color:#c9d1d9;font-size:13px;outline:none;cursor:pointer}
 
+/* SAVE STATUS */
+#save-status{font-size:12px;padding:4px 10px;border-radius:12px;font-weight:600;letter-spacing:.03em;display:flex;align-items:center;gap:5px;white-space:nowrap}
+#save-status.idle{background:#161b22;color:#484f58;border:1px solid #21262d}
+#save-status.saving{background:#0d2137;color:#79c0ff;border:1px solid #1a3a6d}
+#save-status.saved{background:#0d2b0d;color:#3fb950;border:1px solid #1a4d1a}
+#save-status.error{background:#2d0d0d;color:#f85149;border:1px solid #4d1a1a;cursor:pointer}
+#token-btn{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:5px 10px;color:#8b949e;font-size:11px;cursor:pointer}
+#token-btn:hover{border-color:#7ecfe0;color:#7ecfe0}
+
 /* LAYOUT */
 #main{display:flex;flex:1;overflow:hidden}
 
@@ -58,11 +67,10 @@ body{display:flex;flex-direction:column;height:100vh}
 .metric-value.green{color:#3fb950}
 .metric-value.empty{color:#484f58;font-size:14px;font-weight:400}
 
-/* STATUS */
+/* STATUS CARD */
 .status-card{background:#161b22;border:1px solid #30363d;border-left:3px solid #f0a500;border-radius:8px;padding:14px 16px;margin-bottom:16px}
 .card-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;font-weight:700}
 .status-card .card-title{color:#f0a500}
-.status-text{font-size:13px;color:#c9d1d9;line-height:1.65;white-space:pre-wrap}
 
 /* INFO GRID */
 .section-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;margin-bottom:16px}
@@ -71,16 +79,10 @@ body{display:flex;flex-direction:column;height:100vh}
 .info-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #0d1117}
 .info-row:last-child{border-bottom:none}
 .info-key{font-size:11px;color:#8b949e;flex-shrink:0;max-width:50%}
-.info-val{font-size:12px;color:#c9d1d9;text-align:right;word-break:break-word;line-height:1.4}
-.info-val.yes{color:#3fb950}
-.info-val.no{color:#f85149}
-.info-val.tbd{color:#f0a500}
-.info-val.partial{color:#e3b341}
 
 /* FULL CARDS */
 .full-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 16px;margin-bottom:12px}
 .full-card .card-title{margin-bottom:8px}
-.card-body{font-size:13px;color:#c9d1d9;line-height:1.65;white-space:pre-wrap}
 .full-card.packs{border-left:3px solid #8957e5}
 .full-card.packs .card-title{color:#d2a8ff}
 .full-card.ec{border-left:3px solid #9e6a03}
@@ -89,6 +91,38 @@ body{display:flex;flex-direction:column;height:100vh}
 .full-card.opportunity .card-title{color:#3fb950}
 .full-card.notes{border-left:3px solid #258bbd}
 .full-card.notes .card-title{color:#79c0ff}
+
+/* EDITABLE */
+[contenteditable]{outline:none;border-radius:4px;transition:background .15s, box-shadow .15s;cursor:text;min-width:20px;display:inline-block}
+[contenteditable]:hover{background:rgba(126,207,224,0.06)}
+[contenteditable]:focus{background:rgba(126,207,224,0.1);box-shadow:0 0 0 1px rgba(126,207,224,0.4);padding:1px 4px}
+.editable-inline{font-size:12px;color:#c9d1d9;text-align:right;word-break:break-word;line-height:1.4}
+.editable-inline:empty:before{content:attr(data-placeholder);color:#484f58}
+.editable-multi{font-size:13px;color:#c9d1d9;line-height:1.65;white-space:pre-wrap;display:block;width:100%}
+.editable-multi:empty:before{content:attr(data-placeholder);color:#484f58}
+.editable-metric{font-size:20px;font-weight:700;display:inline-block}
+
+/* YES/NO coloring on inline editables */
+.editable-inline.yes{color:#3fb950}
+.editable-inline.no{color:#f85149}
+.editable-inline.tbd{color:#f0a500}
+.editable-inline.partial{color:#e3b341}
+
+/* TOKEN MODAL */
+#token-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center}
+#token-modal.open{display:flex}
+.modal-box{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:28px;max-width:440px;width:90%}
+.modal-box h2{font-size:16px;font-weight:700;color:#e6edf3;margin-bottom:10px}
+.modal-box p{font-size:13px;color:#8b949e;line-height:1.6;margin-bottom:16px}
+.modal-box input{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 12px;color:#c9d1d9;font-size:13px;outline:none;margin-bottom:14px}
+.modal-box input:focus{border-color:#7ecfe0}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end}
+.btn-primary{background:#238636;border:none;border-radius:6px;padding:7px 16px;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+.btn-primary:hover{background:#2ea043}
+.btn-secondary{background:#21262d;border:1px solid #30363d;border-radius:6px;padding:7px 16px;color:#c9d1d9;font-size:13px;cursor:pointer}
+.btn-secondary:hover{background:#30363d}
+.modal-link{color:#79c0ff;text-decoration:none;font-size:12px}
+.modal-link:hover{text-decoration:underline}
 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px}
@@ -108,6 +142,8 @@ body{display:flex;flex-direction:column;height:100vh}
     <option value="Justin">Justin</option>
   </select>
   <input id="search" type="text" placeholder="Search builders..." oninput="renderSidebar()">
+  <div id="save-status" class="idle">● Saved</div>
+  <button id="token-btn" onclick="openTokenModal()" title="Configure GitHub token for auto-save">⚙ GitHub</button>
 </div>
 
 <div id="main">
@@ -115,184 +151,334 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
+<!-- Token Setup Modal -->
+<div id="token-modal">
+  <div class="modal-box">
+    <h2>Connect to GitHub</h2>
+    <p>To auto-save edits directly to GitHub, enter a Personal Access Token with <strong>Contents: Read &amp; Write</strong> permission for the <code>snappahands/amber-dashboard</code> repo.<br><br>
+    <a class="modal-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank">Create a fine-grained token →</a></p>
+    <input id="token-input" type="password" placeholder="github_pat_..." autocomplete="off">
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeTokenModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveToken()">Save Token</button>
+    </div>
+  </div>
+</div>
+
 <script src="data.js"></script>
 <script>
-let selectedIdx = null;
+const REPO_OWNER = 'snappahands';
+const REPO_NAME  = 'amber-dashboard';
+const FILE_PATH  = 'data.js';
 
+let selectedIdx  = null;
+let _saveTimer   = null;
+let _fileSHA     = null;   // cached from last GitHub fetch
+
+/* ── HELPERS ── */
 function bse(b){ return (b['Builder Success Executive']||'').trim(); }
 function v(b,k){ return (b[k]||'').trim(); }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function parseEndDate(s) {
-  s = s.trim();
-  const m = s.match(/(\d{1,2})[.\/](\d{1,2})[.\/](\d{2,4})/);
-  if (!m) return null;
-  let y = parseInt(m[3]);
-  if (y < 100) y += 2000;
-  return new Date(y, parseInt(m[1])-1, parseInt(m[2]));
+function parseEndDate(s){
+  s=s.trim();
+  const m=s.match(/(\d{1,2})[.\/](\d{1,2})[.\/](\d{2,4})/);
+  if(!m) return null;
+  let y=parseInt(m[3]); if(y<100) y+=2000;
+  return new Date(y,parseInt(m[1])-1,parseInt(m[2]));
 }
 
-function contractInfo(b) {
-  const c = v(b,'Contract Start/Expiration date');
-  if (!c) return {status:'none', text:''};
-  if (c === 'Pilot') return {status:'pilot', text:'Pilot'};
-  if (c.toLowerCase().includes('no contract')) return {status:'nocontract', text:'No Contract'};
-  const parts = c.split(/[-–]/);
-  if (parts.length >= 2) {
-    const end = parts[parts.length-1].trim();
-    const d = parseEndDate(end);
-    if (d) {
-      const now = new Date();
-      const soon = new Date(); soon.setMonth(soon.getMonth()+3);
-      if (d < now) return {status:'expired', text:c};
-      if (d < soon) return {status:'expiring', text:c};
-      return {status:'active', text:c};
+function contractInfo(b){
+  const c=v(b,'Contract Start/Expiration date');
+  if(!c) return {status:'none',text:''};
+  if(c==='Pilot') return {status:'pilot',text:'Pilot'};
+  if(c.toLowerCase().includes('no contract')) return {status:'nocontract',text:'No Contract'};
+  const parts=c.split(/[-–]/);
+  if(parts.length>=2){
+    const d=parseEndDate(parts[parts.length-1]);
+    if(d){
+      const now=new Date(), soon=new Date(); soon.setMonth(soon.getMonth()+3);
+      if(d<now) return {status:'expired',text:c};
+      if(d<soon) return {status:'expiring',text:c};
+      return {status:'active',text:c};
     }
   }
-  return {status:'active', text:c};
+  return {status:'active',text:c};
 }
 
-function renderSidebar() {
-  const q = document.getElementById('search').value.toLowerCase();
-  const bseFilter = document.getElementById('filter-bse').value;
-  const sb = document.getElementById('sidebar');
-
-  const filtered = BUILDERS.map((b,i) => ({b,i})).filter(({b}) => {
-    if (bseFilter && !bse(b).toLowerCase().includes(bseFilter.toLowerCase())) return false;
-    if (q && !b.name.toLowerCase().includes(q)) return false;
+/* ── SIDEBAR ── */
+function renderSidebar(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const bseFilter=document.getElementById('filter-bse').value;
+  const filtered=BUILDERS.map((b,i)=>({b,i})).filter(({b})=>{
+    if(bseFilter && !bse(b).toLowerCase().includes(bseFilter.toLowerCase())) return false;
+    if(q && !b.name.toLowerCase().includes(q)) return false;
     return true;
   });
-
-  let html = `<div class="sidebar-count">${filtered.length} Builder${filtered.length!==1?'s':''}</div>`;
-  filtered.forEach(({b,i}) => {
-    const bseVal = bse(b);
-    const tagClass = bseVal === 'Amber' ? 'tag-amber' : bseVal === 'Justin' ? 'tag-justin' : '';
-    html += `<div class="builder-item${i===selectedIdx?' active':''}" onclick="selectBuilder(${i})">
+  let html=`<div class="sidebar-count">${filtered.length} Builder${filtered.length!==1?'s':''}</div>`;
+  filtered.forEach(({b,i})=>{
+    const bv=bse(b);
+    const tc=bv==='Amber'?'tag-amber':bv==='Justin'?'tag-justin':'';
+    html+=`<div class="builder-item${i===selectedIdx?' active':''}" onclick="selectBuilder(${i})">
       ${esc(b.name)}
-      ${bseVal ? `<div><span class="bse-tag ${tagClass}">${esc(bseVal)}</span></div>` : ''}
+      ${bv?`<div><span class="bse-tag ${tc}">${esc(bv)}</span></div>`:''}
     </div>`;
   });
-  sb.innerHTML = html;
+  document.getElementById('sidebar').innerHTML=html;
 }
 
-function selectBuilder(idx) {
-  selectedIdx = idx;
+function selectBuilder(idx){
+  selectedIdx=idx;
   renderSidebar();
   renderDetail(BUILDERS[idx]);
-  document.getElementById('content').scrollTop = 0;
+  document.getElementById('content').scrollTop=0;
 }
 
-function infoValHtml(val) {
-  const low = val.toLowerCase();
-  if (low==='yes'||low==='completed') return `<span class="info-val yes">${esc(val)}</span>`;
-  if (low==='no') return `<span class="info-val no">${esc(val)}</span>`;
-  if (low==='tbd') return `<span class="info-val tbd">${esc(val)}</span>`;
-  if (low==='partial'||low==='in process'||low==='needed') return `<span class="info-val partial">${esc(val)}</span>`;
-  return `<span class="info-val">${esc(val)}</span>`;
+/* ── EDITABLE ELEMENTS ── */
+// Called on input event from any contenteditable
+function onEdit(el){
+  const idx=parseInt(el.dataset.idx);
+  const field=el.dataset.field;
+  BUILDERS[idx][field]=el.innerText;
+
+  // Re-color yes/no inline values
+  if(el.classList.contains('editable-inline')) colorInline(el);
+
+  // Rebuild sidebar if name or BSE changed
+  if(field==='name' || field==='Builder Success Executive') renderSidebar();
+
+  scheduleSave();
 }
 
-function infoRow(label, val) {
-  if (!val) return '';
-  return `<div class="info-row"><span class="info-key">${esc(label)}</span>${infoValHtml(val)}</div>`;
+function colorInline(el){
+  const low=el.innerText.toLowerCase().trim();
+  el.classList.remove('yes','no','tbd','partial');
+  if(low==='yes'||low==='completed') el.classList.add('yes');
+  else if(low==='no') el.classList.add('no');
+  else if(low==='tbd') el.classList.add('tbd');
+  else if(low==='partial'||low==='in process'||low==='needed') el.classList.add('partial');
 }
 
-function metricCard(label, value, cls='') {
-  const disp = value
-    ? `<div class="metric-value ${cls}">${esc(value)}</div>`
-    : `<div class="metric-value empty">—</div>`;
-  return `<div class="metric-card"><div class="metric-label">${label}</div>${disp}</div>`;
+function eInline(idx, field, placeholder=''){
+  const val=BUILDERS[idx][field]||'';
+  const low=val.toLowerCase().trim();
+  let cls='editable-inline';
+  if(low==='yes'||low==='completed') cls+=' yes';
+  else if(low==='no') cls+=' no';
+  else if(low==='tbd') cls+=' tbd';
+  else if(low==='partial'||low==='in process'||low==='needed') cls+=' partial';
+  return `<span class="${cls}" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" data-placeholder="${esc(placeholder)}" oninput="onEdit(this)">${esc(val)}</span>`;
 }
 
-function renderDetail(b) {
-  const bseVal = bse(b);
-  const bseClass = bseVal==='Amber' ? 'badge badge-amber' : bseVal==='Justin' ? 'badge badge-justin' : '';
-  const ci = contractInfo(b);
-  const statusBadges = {
-    active: '<span class="badge badge-active">CONTRACT ACTIVE</span>',
-    expiring: '<span class="badge badge-expiring">EXPIRING SOON</span>',
-    expired: '<span class="badge badge-expired">CONTRACT EXPIRED</span>',
-    pilot: '<span class="badge badge-pilot">PILOT</span>',
-    nocontract: '<span class="badge badge-nocontract">NO CONTRACT</span>',
-    none: ''
+function eMulti(idx, field, placeholder=''){
+  const val=BUILDERS[idx][field]||'';
+  return `<div class="editable-multi" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" data-placeholder="${esc(placeholder)}" oninput="onEdit(this)">${esc(val)}</div>`;
+}
+
+function eMetric(idx, field, cls=''){
+  const val=BUILDERS[idx][field]||'';
+  return val
+    ? `<div class="metric-value ${cls} editable-inline" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" oninput="onEdit(this)">${esc(val)}</div>`
+    : `<div class="metric-value empty editable-inline" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" data-placeholder="—" oninput="onEdit(this)"></div>`;
+}
+
+/* ── RENDER DETAIL ── */
+function renderDetail(b){
+  const idx=selectedIdx;
+  const bv=bse(b);
+  const bClass=bv==='Amber'?'badge badge-amber':bv==='Justin'?'badge badge-justin':'';
+  const ci=contractInfo(b);
+  const sb={
+    active:`<span class="badge badge-active">${esc(ci.text)}</span>`,
+    expiring:`<span class="badge badge-expiring">⚠ EXPIRING: ${esc(ci.text)}</span>`,
+    expired:`<span class="badge badge-expired">EXPIRED: ${esc(ci.text)}</span>`,
+    pilot:'<span class="badge badge-pilot">PILOT</span>',
+    nocontract:'<span class="badge badge-nocontract">NO CONTRACT</span>',
+    none:''
   };
-
-  const onb = v(b,'Onboarding Status');
-  const onbBadge = onb==='Completed' ? '<span class="badge badge-completed">ONBOARDED</span>' : '';
-
-  const statusText = v(b,'Status Update');
-  const statusCard = statusText ? `<div class="status-card">
-    <div class="card-title">Status Update</div>
-    <div class="status-text">${esc(statusText)}</div>
-  </div>` : '';
-
-  const metrics = `<div class="metrics">
-    ${metricCard('Annual Starts', v(b,'Annual Home Starts'), 'blue')}
-    ${metricCard('2025 Starts w/Deako', v(b,'2025 Starts w Deako'))}
-    ${metricCard('2026 Starts w/Deako', v(b,'2026 Starts w Deako'))}
-    ${metricCard('2026 Closes w/Deako', v(b,'2026 Closes w Deako'))}
-    ${metricCard('Q4 2024 Starts', v(b,'Q4 2024 Starts w Deako'))}
-    ${metricCard('Monthly Rev', v(b,'Mothly Revenue'), 'green')}
-    ${metricCard('Annual Rev', v(b,'Annual Revenue'), 'green')}
-    ${metricCard('Pack Revenue', v(b,'Standard Pack Revenue'), 'green')}
-  </div>`;
-
-  const infoGrid = `<div class="section-grid">
-    <div class="info-card">
-      <div class="card-title">Account Details</div>
-      ${infoRow('Location', v(b,'Locations'))}
-      ${infoRow('Contract', ci.text || v(b,'Contract Start/Expiration date'))}
-      ${infoRow('Notes Updated', v(b,'Notes Updated'))}
-      ${infoRow('First PO', v(b,'First PO completed'))}
-      ${infoRow('Onboarding', v(b,'Onboarding Status'))}
-      ${infoRow('NPS Score', v(b,'NPS Score'))}
-    </div>
-    <div class="info-card">
-      <div class="card-title">Contacts</div>
-      ${infoRow('Purchasing PoC', v(b,'Purchasing PoC'))}
-      ${infoRow('Sales PoC', v(b,'Sales PoC'))}
-    </div>
-    <div class="info-card">
-      <div class="card-title">Homeowner & Data</div>
-      ${infoRow('HO Data Provided', v(b,'Home Owner Data is provided'))}
-      ${infoRow('HST Post-Close', v(b,'HST is reaching out post-close'))}
-    </div>
-    <div class="info-card">
-      <div class="card-title">Trade Routes & Install</div>
-      ${infoRow('Backplates Route', v(b,'Trade Route Backplates'))}
-      ${infoRow('Specialty Route', v(b,'Trade Route Specialty Switches'))}
-      ${infoRow('SS Installer', v(b,'Specialty Switch Installer'))}
-      ${infoRow('Connectors', v(b,'Connectors (backplates)'))}
-      ${infoRow('App Set Up', v(b,'Deako App Set Up'))}
-    </div>
-  </div>`;
-
-  const packs = v(b,'Standard Included Packs');
-  const ec = v(b,'EC/ Integrator');
-  const opp = v(b,'Opportunity for Growth');
-  const notes = v(b,'Notes');
+  const onbBadge=v(b,'Onboarding Status')==='Completed'?'<span class="badge badge-completed">ONBOARDED</span>':'';
 
   document.getElementById('content').innerHTML = `
     <div class="b-header">
       <div>
-        <div class="b-name">${esc(b.name)}</div>
-        <div class="b-location">${esc(v(b,'Locations'))}</div>
+        <div class="b-name" contenteditable="true" data-idx="${idx}" data-field="name" oninput="onEdit(this)">${esc(b.name)}</div>
+        <div class="b-location">${eInline(idx,'Locations','Location')}</div>
         <div class="b-badges">
-          ${bseVal ? `<span class="${bseClass}">BSE: ${esc(bseVal)}</span>` : ''}
-          ${statusBadges[ci.status]||''}
+          ${bv?`<span class="${bClass}">BSE: ${eInline(idx,'Builder Success Executive','BSE')}</span>`:''}
+          ${sb[ci.status]||''}
           ${onbBadge}
         </div>
       </div>
     </div>
-    ${metrics}
-    ${statusCard}
-    ${infoGrid}
-    ${packs ? `<div class="full-card packs"><div class="card-title">Standard Included Packs</div><div class="card-body">${esc(packs)}</div></div>` : ''}
-    ${ec ? `<div class="full-card ec"><div class="card-title">EC / Integrator</div><div class="card-body">${esc(ec)}</div></div>` : ''}
-    ${opp ? `<div class="full-card opportunity"><div class="card-title">Opportunity for Growth</div><div class="card-body">${esc(opp)}</div></div>` : ''}
-    ${notes ? `<div class="full-card notes"><div class="card-title">Notes</div><div class="card-body">${esc(notes)}</div></div>` : ''}
+
+    <div class="metrics">
+      <div class="metric-card"><div class="metric-label">Annual Starts</div>${eMetric(idx,'Annual Home Starts','blue')}</div>
+      <div class="metric-card"><div class="metric-label">2025 Starts w/Deako</div>${eMetric(idx,'2025 Starts w Deako')}</div>
+      <div class="metric-card"><div class="metric-label">2026 Starts w/Deako</div>${eMetric(idx,'2026 Starts w Deako')}</div>
+      <div class="metric-card"><div class="metric-label">2026 Closes w/Deako</div>${eMetric(idx,'2026 Closes w Deako')}</div>
+      <div class="metric-card"><div class="metric-label">Q4 2024 Starts</div>${eMetric(idx,'Q4 2024 Starts w Deako')}</div>
+      <div class="metric-card"><div class="metric-label">Monthly Rev</div>${eMetric(idx,'Mothly Revenue','green')}</div>
+      <div class="metric-card"><div class="metric-label">Annual Rev</div>${eMetric(idx,'Annual Revenue','green')}</div>
+      <div class="metric-card"><div class="metric-label">Pack Revenue</div>${eMetric(idx,'Standard Pack Revenue','green')}</div>
+    </div>
+
+    <div class="status-card">
+      <div class="card-title">Status Update</div>
+      ${eMulti(idx,'Status Update','Enter status update...')}
+    </div>
+
+    <div class="section-grid">
+      <div class="info-card">
+        <div class="card-title" style="color:#8b949e">Account Details</div>
+        ${iRow('Contract', eInline(idx,'Contract Start/Expiration date','e.g. 1.1.25-12.31.27'))}
+        ${iRow('Notes Updated', eInline(idx,'Notes Updated','date'))}
+        ${iRow('First PO', eInline(idx,'First PO completed','Yes/No'))}
+        ${iRow('Onboarding', eInline(idx,'Onboarding Status','status'))}
+        ${iRow('NPS Score', eInline(idx,'NPS Score','0-10'))}
+      </div>
+      <div class="info-card">
+        <div class="card-title" style="color:#8b949e">Contacts</div>
+        ${iRow('Purchasing PoC', eInline(idx,'Purchasing PoC','name'))}
+        ${iRow('Sales PoC', eInline(idx,'Sales PoC','name'))}
+      </div>
+      <div class="info-card">
+        <div class="card-title" style="color:#8b949e">Homeowner & Data</div>
+        ${iRow('HO Data Provided', eInline(idx,'Home Owner Data is provided','yes/no'))}
+        ${iRow('HST Post-Close', eInline(idx,'HST is reaching out post-close','yes/no'))}
+      </div>
+      <div class="info-card">
+        <div class="card-title" style="color:#8b949e">Trade Routes & Install</div>
+        ${iRow('Backplates Route', eInline(idx,'Trade Route Backplates','route'))}
+        ${iRow('Specialty Route', eInline(idx,'Trade Route Specialty Switches','route'))}
+        ${iRow('SS Installer', eInline(idx,'Specialty Switch Installer','who'))}
+        ${iRow('Connectors', eInline(idx,'Connectors (backplates)','QW/Uni'))}
+        ${iRow('App Set Up', eInline(idx,'Deako App Set Up','who'))}
+      </div>
+    </div>
+
+    <div class="full-card packs">
+      <div class="card-title">Standard Included Packs</div>
+      ${eMulti(idx,'Standard Included Packs','Describe standard packs...')}
+    </div>
+    <div class="full-card ec">
+      <div class="card-title">EC / Integrator</div>
+      ${eMulti(idx,'EC/ Integrator','Electrician and integrator details...')}
+    </div>
+    <div class="full-card opportunity">
+      <div class="card-title">Opportunity for Growth</div>
+      ${eMulti(idx,'Opportunity for Growth','Growth opportunities...')}
+    </div>
+    <div class="full-card notes">
+      <div class="card-title">Notes</div>
+      ${eMulti(idx,'Notes','Additional notes...')}
+    </div>
   `;
 }
 
+function iRow(label, valueHtml){
+  return `<div class="info-row"><span class="info-key">${esc(label)}</span>${valueHtml}</div>`;
+}
+
+/* ── AUTO-SAVE ── */
+function scheduleSave(){
+  setSaveStatus('saving');
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(pushToGitHub, 1500);
+}
+
+function setSaveStatus(state, msg){
+  const el=document.getElementById('save-status');
+  el.className='';
+  el.classList.add(state);
+  const labels={
+    idle:'● Saved',
+    saving:'↑ Saving…',
+    saved:'✓ Saved to GitHub',
+    error:'✕ Save failed — click to retry'
+  };
+  el.textContent=msg||labels[state];
+  if(state==='saved') setTimeout(()=>setSaveStatus('idle'),3000);
+  if(state==='error') el.onclick=pushToGitHub;
+  else el.onclick=null;
+}
+
+function getToken(){ return localStorage.getItem('gh_token')||''; }
+
+async function pushToGitHub(){
+  const token=getToken();
+  if(!token){ openTokenModal(); return; }
+
+  try {
+    // 1. Get current SHA (use cached if fresh enough)
+    if(!_fileSHA){
+      const r=await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`,{
+        headers:{Authorization:`token ${token}`, Accept:'application/vnd.github+json'}
+      });
+      if(!r.ok) throw new Error('Could not fetch file from GitHub');
+      const meta=await r.json();
+      _fileSHA=meta.sha;
+    }
+
+    // 2. Build updated data.js content
+    const content='const BUILDERS = '+JSON.stringify(BUILDERS)+';\n';
+
+    // 3. Base64 encode (UTF-8 safe)
+    const encoded=btoa(unescape(encodeURIComponent(content)));
+
+    // 4. Push commit
+    const now=new Date();
+    const ts=now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    const putRes=await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`,{
+      method:'PUT',
+      headers:{Authorization:`token ${token}`, 'Content-Type':'application/json', Accept:'application/vnd.github+json'},
+      body:JSON.stringify({
+        message:`Dashboard edit: auto-saved ${ts}`,
+        content:encoded,
+        sha:_fileSHA
+      })
+    });
+
+    if(!putRes.ok){
+      const err=await putRes.json();
+      // SHA stale — clear and retry once
+      if(putRes.status===409||putRes.status===422){
+        _fileSHA=null;
+        await pushToGitHub();
+        return;
+      }
+      throw new Error(err.message||putRes.statusText);
+    }
+
+    const result=await putRes.json();
+    _fileSHA=result.content.sha;
+    setSaveStatus('saved');
+
+  } catch(e) {
+    console.error('GitHub save error:', e);
+    setSaveStatus('error', '✕ '+(e.message||'Save failed'));
+  }
+}
+
+/* ── TOKEN MODAL ── */
+function openTokenModal(){
+  document.getElementById('token-input').value=getToken();
+  document.getElementById('token-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('token-input').focus(),50);
+}
+function closeTokenModal(){ document.getElementById('token-modal').classList.remove('open'); }
+function saveToken(){
+  const t=document.getElementById('token-input').value.trim();
+  if(t) localStorage.setItem('gh_token',t);
+  closeTokenModal();
+  // Test it by pushing if there are pending changes
+  if(document.getElementById('save-status').classList.contains('saving')) pushToGitHub();
+}
+// Close modal on backdrop click
+document.getElementById('token-modal').addEventListener('click',function(e){ if(e.target===this) closeTokenModal(); });
+// Enter key in token input
+document.getElementById('token-input').addEventListener('keydown',function(e){ if(e.key==='Enter') saveToken(); });
+
+/* ── INIT ── */
 renderSidebar();
 </script>
 </body>
