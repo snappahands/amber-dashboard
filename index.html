@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amber's Dashboard — Deako Builder Accounts</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#0d1117;font-family:system-ui,-apple-system,sans-serif;color:#c9d1d9;overflow:hidden}
+body{display:flex;flex-direction:column;height:100vh}
+
+/* HEADER */
+#header{background:#161b22;border-bottom:1px solid #21262d;padding:10px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;flex-wrap:wrap}
+#header h1{font-size:17px;font-weight:700;color:#e6edf3;letter-spacing:.02em;white-space:nowrap}
+.header-sub{font-size:11px;color:#8b949e;background:#0d1117;padding:2px 8px;border-radius:10px;font-weight:600}
+#search{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:6px 12px;color:#c9d1d9;font-size:13px;width:180px;outline:none;margin-left:auto}
+#search:focus{border-color:#7ecfe0}
+#filter-bse{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:6px 10px;color:#c9d1d9;font-size:13px;outline:none;cursor:pointer}
+
+/* LAYOUT */
+#main{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+#sidebar{width:210px;flex-shrink:0;background:#161b22;border-right:1px solid #21262d;overflow-y:auto;padding:6px 0}
+.builder-item{padding:9px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .12s;font-size:12px;color:#8b949e;line-height:1.3}
+.builder-item:hover{background:#1c2128;color:#c9d1d9}
+.builder-item.active{background:#1c2128;border-left-color:#7ecfe0;color:#e6edf3;font-weight:600}
+.bse-tag{font-size:10px;padding:1px 5px;border-radius:3px;margin-top:3px;display:inline-block;font-weight:700;letter-spacing:.03em}
+.tag-amber{background:#2d1f00;color:#f0a500}
+.tag-justin{background:#0d2137;color:#4fa8d5}
+.sidebar-count{padding:8px 14px 4px;font-size:10px;color:#484f58;letter-spacing:.06em;text-transform:uppercase}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;padding:20px;background:#0d1117}
+.empty-state{display:flex;align-items:center;justify-content:center;height:100%;color:#484f58;font-size:15px}
+
+/* BUILDER HEADER */
+.b-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.b-name{font-size:22px;font-weight:700;color:#e6edf3;line-height:1.2}
+.b-location{font-size:13px;color:#8b949e;margin-top:3px}
+.b-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.badge{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.05em;white-space:nowrap}
+.badge-amber{background:#2d1f00;color:#f0a500;border:1px solid #4a3200}
+.badge-justin{background:#0d2137;color:#4fa8d5;border:1px solid #153a5a}
+.badge-completed{background:#0d2b0d;color:#3fb950;border:1px solid #1a4d1a}
+.badge-pilot{background:#2d1a2d;color:#d2a8ff;border:1px solid #4d2a6d}
+.badge-active{background:#0d2137;color:#79c0ff;border:1px solid #1a3a6d}
+.badge-expired{background:#2d0d0d;color:#f85149;border:1px solid #4d1a1a}
+.badge-expiring{background:#2d1f00;color:#f0a500;border:1px solid #4a3200}
+.badge-nocontract{background:#21262d;color:#8b949e;border:1px solid #30363d}
+
+/* METRICS */
+.metrics{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.metric-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:11px 14px;min-width:100px;flex:1}
+.metric-label{font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;white-space:nowrap}
+.metric-value{font-size:20px;font-weight:700;color:#e6edf3}
+.metric-value.blue{color:#7ecfe0}
+.metric-value.green{color:#3fb950}
+.metric-value.empty{color:#484f58;font-size:14px;font-weight:400}
+
+/* STATUS */
+.status-card{background:#161b22;border:1px solid #30363d;border-left:3px solid #f0a500;border-radius:8px;padding:14px 16px;margin-bottom:16px}
+.card-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;font-weight:700}
+.status-card .card-title{color:#f0a500}
+.status-text{font-size:13px;color:#c9d1d9;line-height:1.65;white-space:pre-wrap}
+
+/* INFO GRID */
+.section-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;margin-bottom:16px}
+.info-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 16px}
+.info-card .card-title{color:#8b949e}
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #0d1117}
+.info-row:last-child{border-bottom:none}
+.info-key{font-size:11px;color:#8b949e;flex-shrink:0;max-width:50%}
+.info-val{font-size:12px;color:#c9d1d9;text-align:right;word-break:break-word;line-height:1.4}
+.info-val.yes{color:#3fb950}
+.info-val.no{color:#f85149}
+.info-val.tbd{color:#f0a500}
+.info-val.partial{color:#e3b341}
+
+/* FULL CARDS */
+.full-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.full-card .card-title{margin-bottom:8px}
+.card-body{font-size:13px;color:#c9d1d9;line-height:1.65;white-space:pre-wrap}
+.full-card.packs{border-left:3px solid #8957e5}
+.full-card.packs .card-title{color:#d2a8ff}
+.full-card.ec{border-left:3px solid #9e6a03}
+.full-card.ec .card-title{color:#e3b341}
+.full-card.opportunity{border-left:3px solid #3fb950}
+.full-card.opportunity .card-title{color:#3fb950}
+.full-card.notes{border-left:3px solid #258bbd}
+.full-card.notes .card-title{color:#79c0ff}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#0d1117}
+::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#484f58}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Amber's Dashboard</h1>
+  <span class="header-sub">Deako Builder Accounts</span>
+  <select id="filter-bse" onchange="renderSidebar()">
+    <option value="">All BSEs</option>
+    <option value="Amber">Amber</option>
+    <option value="Justin">Justin</option>
+  </select>
+  <input id="search" type="text" placeholder="Search builders..." oninput="renderSidebar()">
+</div>
+
+<div id="main">
+  <div id="sidebar"></div>
+  <div id="content"><div class="empty-state">← Select a builder</div></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+let selectedIdx = null;
+
+function bse(b){ return (b['Builder Success Executive']||'').trim(); }
+function v(b,k){ return (b[k]||'').trim(); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function parseEndDate(s) {
+  s = s.trim();
+  const m = s.match(/(\d{1,2})[.\/](\d{1,2})[.\/](\d{2,4})/);
+  if (!m) return null;
+  let y = parseInt(m[3]);
+  if (y < 100) y += 2000;
+  return new Date(y, parseInt(m[1])-1, parseInt(m[2]));
+}
+
+function contractInfo(b) {
+  const c = v(b,'Contract Start/Expiration date');
+  if (!c) return {status:'none', text:''};
+  if (c === 'Pilot') return {status:'pilot', text:'Pilot'};
+  if (c.toLowerCase().includes('no contract')) return {status:'nocontract', text:'No Contract'};
+  const parts = c.split(/[-–]/);
+  if (parts.length >= 2) {
+    const end = parts[parts.length-1].trim();
+    const d = parseEndDate(end);
+    if (d) {
+      const now = new Date();
+      const soon = new Date(); soon.setMonth(soon.getMonth()+3);
+      if (d < now) return {status:'expired', text:c};
+      if (d < soon) return {status:'expiring', text:c};
+      return {status:'active', text:c};
+    }
+  }
+  return {status:'active', text:c};
+}
+
+function renderSidebar() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const bseFilter = document.getElementById('filter-bse').value;
+  const sb = document.getElementById('sidebar');
+
+  const filtered = BUILDERS.map((b,i) => ({b,i})).filter(({b}) => {
+    if (bseFilter && !bse(b).toLowerCase().includes(bseFilter.toLowerCase())) return false;
+    if (q && !b.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  let html = `<div class="sidebar-count">${filtered.length} Builder${filtered.length!==1?'s':''}</div>`;
+  filtered.forEach(({b,i}) => {
+    const bseVal = bse(b);
+    const tagClass = bseVal === 'Amber' ? 'tag-amber' : bseVal === 'Justin' ? 'tag-justin' : '';
+    html += `<div class="builder-item${i===selectedIdx?' active':''}" onclick="selectBuilder(${i})">
+      ${esc(b.name)}
+      ${bseVal ? `<div><span class="bse-tag ${tagClass}">${esc(bseVal)}</span></div>` : ''}
+    </div>`;
+  });
+  sb.innerHTML = html;
+}
+
+function selectBuilder(idx) {
+  selectedIdx = idx;
+  renderSidebar();
+  renderDetail(BUILDERS[idx]);
+  document.getElementById('content').scrollTop = 0;
+}
+
+function infoValHtml(val) {
+  const low = val.toLowerCase();
+  if (low==='yes'||low==='completed') return `<span class="info-val yes">${esc(val)}</span>`;
+  if (low==='no') return `<span class="info-val no">${esc(val)}</span>`;
+  if (low==='tbd') return `<span class="info-val tbd">${esc(val)}</span>`;
+  if (low==='partial'||low==='in process'||low==='needed') return `<span class="info-val partial">${esc(val)}</span>`;
+  return `<span class="info-val">${esc(val)}</span>`;
+}
+
+function infoRow(label, val) {
+  if (!val) return '';
+  return `<div class="info-row"><span class="info-key">${esc(label)}</span>${infoValHtml(val)}</div>`;
+}
+
+function metricCard(label, value, cls='') {
+  const disp = value
+    ? `<div class="metric-value ${cls}">${esc(value)}</div>`
+    : `<div class="metric-value empty">—</div>`;
+  return `<div class="metric-card"><div class="metric-label">${label}</div>${disp}</div>`;
+}
+
+function renderDetail(b) {
+  const bseVal = bse(b);
+  const bseClass = bseVal==='Amber' ? 'badge badge-amber' : bseVal==='Justin' ? 'badge badge-justin' : '';
+  const ci = contractInfo(b);
+  const statusBadges = {
+    active: '<span class="badge badge-active">CONTRACT ACTIVE</span>',
+    expiring: '<span class="badge badge-expiring">EXPIRING SOON</span>',
+    expired: '<span class="badge badge-expired">CONTRACT EXPIRED</span>',
+    pilot: '<span class="badge badge-pilot">PILOT</span>',
+    nocontract: '<span class="badge badge-nocontract">NO CONTRACT</span>',
+    none: ''
+  };
+
+  const onb = v(b,'Onboarding Status');
+  const onbBadge = onb==='Completed' ? '<span class="badge badge-completed">ONBOARDED</span>' : '';
+
+  const statusText = v(b,'Status Update');
+  const statusCard = statusText ? `<div class="status-card">
+    <div class="card-title">Status Update</div>
+    <div class="status-text">${esc(statusText)}</div>
+  </div>` : '';
+
+  const metrics = `<div class="metrics">
+    ${metricCard('Annual Starts', v(b,'Annual Home Starts'), 'blue')}
+    ${metricCard('2025 Starts w/Deako', v(b,'2025 Starts w Deako'))}
+    ${metricCard('2026 Starts w/Deako', v(b,'2026 Starts w Deako'))}
+    ${metricCard('2026 Closes w/Deako', v(b,'2026 Closes w Deako'))}
+    ${metricCard('Q4 2024 Starts', v(b,'Q4 2024 Starts w Deako'))}
+    ${metricCard('Monthly Rev', v(b,'Mothly Revenue'), 'green')}
+    ${metricCard('Annual Rev', v(b,'Annual Revenue'), 'green')}
+    ${metricCard('Pack Revenue', v(b,'Standard Pack Revenue'), 'green')}
+  </div>`;
+
+  const infoGrid = `<div class="section-grid">
+    <div class="info-card">
+      <div class="card-title">Account Details</div>
+      ${infoRow('Location', v(b,'Locations'))}
+      ${infoRow('Contract', ci.text || v(b,'Contract Start/Expiration date'))}
+      ${infoRow('Notes Updated', v(b,'Notes Updated'))}
+      ${infoRow('First PO', v(b,'First PO completed'))}
+      ${infoRow('Onboarding', v(b,'Onboarding Status'))}
+      ${infoRow('NPS Score', v(b,'NPS Score'))}
+    </div>
+    <div class="info-card">
+      <div class="card-title">Contacts</div>
+      ${infoRow('Purchasing PoC', v(b,'Purchasing PoC'))}
+      ${infoRow('Sales PoC', v(b,'Sales PoC'))}
+    </div>
+    <div class="info-card">
+      <div class="card-title">Homeowner & Data</div>
+      ${infoRow('HO Data Provided', v(b,'Home Owner Data is provided'))}
+      ${infoRow('HST Post-Close', v(b,'HST is reaching out post-close'))}
+    </div>
+    <div class="info-card">
+      <div class="card-title">Trade Routes & Install</div>
+      ${infoRow('Backplates Route', v(b,'Trade Route Backplates'))}
+      ${infoRow('Specialty Route', v(b,'Trade Route Specialty Switches'))}
+      ${infoRow('SS Installer', v(b,'Specialty Switch Installer'))}
+      ${infoRow('Connectors', v(b,'Connectors (backplates)'))}
+      ${infoRow('App Set Up', v(b,'Deako App Set Up'))}
+    </div>
+  </div>`;
+
+  const packs = v(b,'Standard Included Packs');
+  const ec = v(b,'EC/ Integrator');
+  const opp = v(b,'Opportunity for Growth');
+  const notes = v(b,'Notes');
+
+  document.getElementById('content').innerHTML = `
+    <div class="b-header">
+      <div>
+        <div class="b-name">${esc(b.name)}</div>
+        <div class="b-location">${esc(v(b,'Locations'))}</div>
+        <div class="b-badges">
+          ${bseVal ? `<span class="${bseClass}">BSE: ${esc(bseVal)}</span>` : ''}
+          ${statusBadges[ci.status]||''}
+          ${onbBadge}
+        </div>
+      </div>
+    </div>
+    ${metrics}
+    ${statusCard}
+    ${infoGrid}
+    ${packs ? `<div class="full-card packs"><div class="card-title">Standard Included Packs</div><div class="card-body">${esc(packs)}</div></div>` : ''}
+    ${ec ? `<div class="full-card ec"><div class="card-title">EC / Integrator</div><div class="card-body">${esc(ec)}</div></div>` : ''}
+    ${opp ? `<div class="full-card opportunity"><div class="card-title">Opportunity for Growth</div><div class="card-body">${esc(opp)}</div></div>` : ''}
+    ${notes ? `<div class="full-card notes"><div class="card-title">Notes</div><div class="card-body">${esc(notes)}</div></div>` : ''}
+  `;
+}
+
+renderSidebar();
+</script>
+</body>
+</html>
