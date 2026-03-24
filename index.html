@@ -201,7 +201,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v2.0</div>
+<div id="version-badge">v2.1</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -516,7 +516,7 @@ function getToken(){ return localStorage.getItem('gh_token')||''; }
 
 async function pushToGitHub(){
   const token=getToken();
-  if(!token){ openTokenModal(); return; }
+  if(!token){ setSaveStatus('error','✕ No GitHub token — click ⚙ to configure'); return; }
 
   try {
     // 1. Get current SHA (use cached if fresh enough)
