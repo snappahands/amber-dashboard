@@ -23,6 +23,9 @@ body{display:flex;flex-direction:column;height:100vh}
 #save-status.saving{background:#0d2137;color:#79c0ff;border:1px solid #1a3a6d}
 #save-status.saved{background:#0d2b0d;color:#3fb950;border:1px solid #1a4d1a}
 #save-status.error{background:#2d0d0d;color:#f85149;border:1px solid #4d1a1a;cursor:pointer}
+#deploy-btn{background:#0d2b0d;border:1px solid #1a4d1a;border-radius:6px;padding:5px 10px;color:#3fb950;font-size:11px;font-weight:600;cursor:pointer}
+#deploy-btn:hover{border-color:#3fb950;color:#56d971}
+#deploy-btn:disabled{opacity:.5;cursor:default}
 #token-btn{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:5px 10px;color:#8b949e;font-size:11px;cursor:pointer}
 #token-btn:hover{border-color:#7ecfe0;color:#7ecfe0}
 
@@ -87,10 +90,20 @@ body{display:flex;flex-direction:column;height:100vh}
 .full-card.packs .card-title{color:#d2a8ff}
 .full-card.ec{border-left:3px solid #9e6a03}
 .full-card.ec .card-title{color:#e3b341}
+.full-card.integrator{border-left:3px solid #58a6ff}
+.full-card.integrator .card-title{color:#79c0ff}
 .full-card.opportunity{border-left:3px solid #3fb950}
 .full-card.opportunity .card-title{color:#3fb950}
 .full-card.notes{border-left:3px solid #258bbd}
 .full-card.notes .card-title{color:#79c0ff}
+.info-card.acct-details{border-left:3px solid #6e7681}
+.info-card.acct-details .card-title{color:#a0aab4}
+.info-card.acct-contacts{border-left:3px solid #c778dd}
+.info-card.acct-contacts .card-title{color:#d9a0e8}
+.info-card.homeowner{border-left:3px solid #2ea9a9}
+.info-card.homeowner .card-title{color:#56d4cc}
+.info-card.trade{border-left:3px solid #d4782a}
+.info-card.trade .card-title{color:#f0a040}
 
 /* EDITABLE */
 [contenteditable]{outline:none;border-radius:4px;transition:background .12s,box-shadow .12s,border-color .12s;cursor:text;min-width:24px}
@@ -175,6 +188,7 @@ body{display:flex;flex-direction:column;height:100vh}
   </select>
   <input id="search" type="text" placeholder="Search builders..." oninput="renderSidebar()">
   <div id="save-status" class="idle">● Saved</div>
+  <button id="deploy-btn" onclick="pushLayout()" title="Push index.html to GitHub so colleagues see latest version">↑ Deploy Layout</button>
   <button id="token-btn" onclick="openTokenModal()" title="Configure GitHub token for auto-save">⚙ GitHub</button>
 </div>
 
@@ -183,7 +197,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v1.2</div>
+<div id="version-badge">v1.8</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -361,41 +375,53 @@ function renderDetail(b){
     </div>
 
     <div class="section-grid">
-      <div class="info-card">
-        <div class="card-title" style="color:#8b949e">Account Details</div>
+      <div class="info-card acct-details">
+        <div class="card-title">Account Details</div>
         ${iRow('Contract', eInline(idx,'Contract Start/Expiration date','e.g. 1.1.25-12.31.27'))}
         ${iRow('Notes Updated', eInline(idx,'Notes Updated','date'))}
         ${iRow('First PO', eInline(idx,'First PO completed','Yes/No'))}
         ${iRow('Onboarding', eInline(idx,'Onboarding Status','status'))}
         ${iRow('NPS Score', eInline(idx,'NPS Score','0-10'))}
       </div>
-      <div class="info-card">
-        <div class="card-title" style="color:#8b949e">Contacts</div>
+      <div class="info-card acct-contacts">
+        <div class="card-title">Account Contacts</div>
         ${iRow('Purchasing PoC', eInline(idx,'Purchasing PoC','name'))}
         ${iRow('Sales PoC', eInline(idx,'Sales PoC','name'))}
       </div>
-      <div class="info-card">
-        <div class="card-title" style="color:#8b949e">Homeowner & Data</div>
+      <div class="full-card ec" style="margin-bottom:0">
+        <div class="card-title">Electrician (EC)</div>
+        ${iRow('Company', eInline(idx,'EC Company','company name'))}
+        ${iRow('Main PoC', eInline(idx,'EC PoC','contact name'))}
+        ${iRow('Email', eInline(idx,'EC Email','email address'))}
+        ${iRow('Phone', eInline(idx,'EC Phone','phone number'))}
+      </div>
+      <div class="full-card integrator" style="margin-bottom:0">
+        <div class="card-title">Integrator</div>
+        ${iRow('Company', eInline(idx,'Integrator Company','company name'))}
+        ${iRow('Main PoC', eInline(idx,'Integrator PoC','contact name'))}
+        ${iRow('Email', eInline(idx,'Integrator Email','email address'))}
+        ${iRow('Phone', eInline(idx,'Integrator Phone','phone number'))}
+      </div>
+    </div>
+
+    <div class="section-grid">
+      <div class="info-card homeowner">
+        <div class="card-title">Homeowner & Data</div>
         ${iRow('HO Data Provided', eInline(idx,'Home Owner Data is provided','yes/no'))}
         ${iRow('HST Post-Close', eInline(idx,'HST is reaching out post-close','yes/no'))}
       </div>
-      <div class="info-card">
-        <div class="card-title" style="color:#8b949e">Trade Routes & Install</div>
+      <div class="info-card trade">
+        <div class="card-title">Trade Routes & Install</div>
         ${iRow('Backplates Route', eInline(idx,'Trade Route Backplates','route'))}
         ${iRow('Specialty Route', eInline(idx,'Trade Route Specialty Switches','route'))}
         ${iRow('SS Installer', eInline(idx,'Specialty Switch Installer','who'))}
         ${iRow('Connectors', eInline(idx,'Connectors (backplates)','QW/Uni'))}
         ${iRow('App Set Up', eInline(idx,'Deako App Set Up','who'))}
       </div>
-    </div>
-
-    <div class="full-card packs">
-      <div class="card-title">Standard Included Packs</div>
-      ${eMulti(idx,'Standard Included Packs','Describe standard packs...')}
-    </div>
-    <div class="full-card ec">
-      <div class="card-title">EC / Integrator</div>
-      ${eMulti(idx,'EC/ Integrator','Electrician and integrator details...')}
+      <div class="full-card packs" style="margin-bottom:0">
+        <div class="card-title">Standard Included Packs</div>
+        ${eMulti(idx,'Standard Included Packs','Describe standard packs...')}
+      </div>
     </div>
     <div class="full-card opportunity">
       <div class="card-title">Opportunity for Growth</div>
@@ -492,6 +518,51 @@ async function pushToGitHub(){
   }
 }
 
+/* ── DEPLOY LAYOUT ── */
+let _htmlSHA = null;
+
+async function pushLayout(){
+  const token=getToken();
+  if(!token){ openTokenModal(); return; }
+  const btn=document.getElementById('deploy-btn');
+  btn.textContent='↑ Deploying…';
+  btn.disabled=true;
+  try {
+    // 1. Get current SHA of index.html
+    if(!_htmlSHA){
+      const r=await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/index.html`,{
+        headers:{Authorization:`token ${token}`, Accept:'application/vnd.github+json'}
+      });
+      if(!r.ok) throw new Error('Could not fetch index.html from GitHub');
+      const meta=await r.json();
+      _htmlSHA=meta.sha;
+    }
+    // 2. Fetch the raw local file content via XHR (works on file:// and Pages)
+    const raw=await fetch('index.html').then(r=>r.text());
+    const encoded=btoa(unescape(encodeURIComponent(raw)));
+    const now=new Date();
+    const ts=now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    const putRes=await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/index.html`,{
+      method:'PUT',
+      headers:{Authorization:`token ${token}`,'Content-Type':'application/json',Accept:'application/vnd.github+json'},
+      body:JSON.stringify({message:`Layout deploy: ${ts}`,content:encoded,sha:_htmlSHA})
+    });
+    if(!putRes.ok){
+      const err=await putRes.json();
+      if(putRes.status===409||putRes.status===422){ _htmlSHA=null; btn.textContent='↑ Deploy Layout'; btn.disabled=false; await pushLayout(); return; }
+      throw new Error(err.message||putRes.statusText);
+    }
+    const result=await putRes.json();
+    _htmlSHA=result.content.sha;
+    btn.textContent='✓ Deployed!';
+    setTimeout(()=>{ btn.textContent='↑ Deploy Layout'; btn.disabled=false; },3000);
+  } catch(e){
+    console.error('Deploy error:',e);
+    btn.textContent='✕ Deploy failed';
+    btn.disabled=false;
+  }
+}
+
 /* ── TOKEN MODAL ── */
 function openTokenModal(){
   document.getElementById('token-input').value=getToken();
@@ -513,6 +584,8 @@ document.getElementById('token-input').addEventListener('keydown',function(e){ i
 
 /* ── INIT ── */
 renderSidebar();
+const _defaultIdx = BUILDERS.findIndex(b => b.name === 'Maronda');
+if(_defaultIdx !== -1) selectBuilder(_defaultIdx);
 </script>
 </body>
 </html>
