@@ -68,7 +68,15 @@ body{display:flex;flex-direction:column;height:100vh}
 /* METRICS */
 .metrics{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .metric-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:11px 14px;min-width:100px;flex:1}
-.metric-card.missing{background:#2d0d0d;border-color:#f85149;}
+.metric-card.missing{background:#2d0d0d;border-color:#f85149;position:relative;}
+.missing-flag{position:absolute;top:5px;right:7px;display:flex;align-items:flex-start;gap:0;pointer-events:none}
+.flag-pole{width:2px;height:28px;background:#c9d1d9;border-radius:1px;flex-shrink:0}
+.flag-banner{background:#f85149;color:#fff;font-size:6px;font-weight:900;letter-spacing:.1em;padding:2px 4px;border-radius:0 2px 2px 0;margin-top:2px;transform-origin:left center;animation:flag-wave 1s ease-in-out infinite alternate;line-height:1.2}
+@keyframes flag-wave{
+  0%{transform:skewY(-6deg) scaleX(1)}
+  50%{transform:skewY(0deg) scaleX(0.92)}
+  100%{transform:skewY(6deg) scaleX(1)}
+}
 .metric-label{font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;white-space:nowrap}
 .metric-value{font-size:20px;font-weight:700;color:#e6edf3}
 .metric-value.blue{color:#7ecfe0}
@@ -202,7 +210,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v2.3</div>
+<div id="version-badge">v2.4</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -383,7 +391,8 @@ function eMetric(idx, field, cls=''){
 
 function mCard(idx, label, field, valCls=''){
   const missing=!(BUILDERS[idx][field]||'').trim();
-  return `<div class="metric-card${missing?' missing':''}"><div class="metric-label">${label}</div>${eMetric(idx,field,valCls)}</div>`;
+  const flag=missing?`<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner">AMBER</div></div>`:'';
+  return `<div class="metric-card${missing?' missing':''}">${flag}<div class="metric-label">${label}</div>${eMetric(idx,field,valCls)}</div>`;
 }
 
 /* ── RENDER DETAIL ── */
