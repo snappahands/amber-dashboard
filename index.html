@@ -214,7 +214,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v3.0</div>
+<div id="version-badge">v3.1</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -400,7 +400,10 @@ const _FLAG_CARDS=[
   ['Contract Start/Expiration date','Notes Updated','First PO completed','Onboarding Status','NPS Score'],
   ['Purchasing PoC','Sales PoC'],
   ['EC Company','EC PoC','EC Email','EC Phone'],
-  ['Integrator Company','Integrator PoC','Integrator Email','Integrator Phone']
+  ['Integrator Company','Integrator PoC','Integrator Email','Integrator Phone'],
+  ['Home Owner Data is provided','HST is reaching out post-close'],
+  ['Trade Route Backplates','Trade Route Specialty Switches','Specialty Switch Installer','Connectors (backplates)','Deako App Set Up'],
+  ['Standard Included Packs']
 ];
 function updateFlagCount(){
   let n=0;
@@ -475,23 +478,9 @@ function renderDetail(b, idx=selectedIdx){
     </div>
 
     <div class="section-grid">
-      <div class="info-card homeowner">
-        <div class="card-title">Homeowner & Data</div>
-        ${iRow('HO Data Provided', eInline(idx,'Home Owner Data is provided','yes/no'))}
-        ${iRow('HST Post-Close', eInline(idx,'HST is reaching out post-close','yes/no'))}
-      </div>
-      <div class="info-card trade">
-        <div class="card-title">Trade Routes & Install</div>
-        ${iRow('Backplates Route', eInline(idx,'Trade Route Backplates','route'))}
-        ${iRow('Specialty Route', eInline(idx,'Trade Route Specialty Switches','route'))}
-        ${iRow('SS Installer', eInline(idx,'Specialty Switch Installer','who'))}
-        ${iRow('Connectors', eInline(idx,'Connectors (backplates)','QW/Uni'))}
-        ${iRow('App Set Up', eInline(idx,'Deako App Set Up','who'))}
-      </div>
-      <div class="full-card packs" style="margin-bottom:0">
-        <div class="card-title">Standard Included Packs</div>
-        ${eMulti(idx,'Standard Included Packs','Describe standard packs...')}
-      </div>
+      ${(()=>{ const m=anyBlank(idx,['Home Owner Data is provided','HST is reaching out post-close']); return `<div class="info-card homeowner${m?' missing':''}">${m?amberFlag():''}<div class="card-title">Homeowner & Data</div>${iRow('HO Data Provided',eInline(idx,'Home Owner Data is provided','yes/no'))}${iRow('HST Post-Close',eInline(idx,'HST is reaching out post-close','yes/no'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Trade Route Backplates','Trade Route Specialty Switches','Specialty Switch Installer','Connectors (backplates)','Deako App Set Up']); return `<div class="info-card trade${m?' missing':''}">${m?amberFlag():''}<div class="card-title">Trade Routes & Install</div>${iRow('Backplates Route',eInline(idx,'Trade Route Backplates','route'))}${iRow('Specialty Route',eInline(idx,'Trade Route Specialty Switches','route'))}${iRow('SS Installer',eInline(idx,'Specialty Switch Installer','who'))}${iRow('Connectors',eInline(idx,'Connectors (backplates)','QW/Uni'))}${iRow('App Set Up',eInline(idx,'Deako App Set Up','who'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Standard Included Packs']); return `<div class="full-card packs${m?' missing':''}" style="margin-bottom:0">${m?amberFlag():''}<div class="card-title">Standard Included Packs</div>${eMulti(idx,'Standard Included Packs','Describe standard packs...')}</div>`; })()}
     </div>
     <div class="full-card opportunity">
       <div class="card-title">Opportunity for Growth</div>
