@@ -23,6 +23,8 @@ body{display:flex;flex-direction:column;height:100vh}
 #save-status.saving{background:#0d2137;color:#79c0ff;border:1px solid #1a3a6d}
 #save-status.saved{background:#0d2b0d;color:#3fb950;border:1px solid #1a4d1a}
 #save-status.error{background:#2d0d0d;color:#f85149;border:1px solid #4d1a1a;cursor:pointer}
+#flag-count{background:#2d0d0d;border:1px solid #f85149;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:800;color:#f85149;white-space:nowrap;letter-spacing:.04em}
+#flag-count.zero{background:#0d2b0d;border-color:#3fb950;color:#3fb950}
 #deploy-btn{background:#0d2b0d;border:1px solid #1a4d1a;border-radius:6px;padding:5px 10px;color:#3fb950;font-size:11px;font-weight:600;cursor:pointer}
 #deploy-btn:hover{border-color:#3fb950;color:#56d971}
 #deploy-btn:disabled{opacity:.5;cursor:default}
@@ -201,6 +203,7 @@ body{display:flex;flex-direction:column;height:100vh}
     <option value="Justin">Justin</option>
   </select>
   <input id="search" type="text" placeholder="Search builders..." oninput="renderSidebar()">
+  <div id="flag-count" title="Total missing data flags across all builders">🚩 —</div>
   <div id="save-status" class="idle">● Saved</div>
   <button id="deploy-btn" onclick="pushLayout()" title="Push index.html to GitHub so colleagues see latest version">↑ Deploy Layout</button>
   <button id="token-btn" onclick="openTokenModal()" title="Configure GitHub token for auto-save">⚙ GitHub</button>
@@ -211,7 +214,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v2.6</div>
+<div id="version-badge">v2.7</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -356,6 +359,7 @@ function onEdit(el){
   // Rebuild sidebar if name or BSE changed
   if(field==='name' || field==='Builder Success Executive') renderSidebar();
 
+  updateFlagCount();
   scheduleSave();
 }
 
@@ -388,6 +392,26 @@ function eMetric(idx, field, cls=''){
   const val=BUILDERS[idx][field]||'';
   const empty=!val;
   return `<div class="metric-value${empty?' empty':''} ${cls}" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" oninput="onEdit(this)">${esc(val)}</div>`;
+}
+
+/* ── FLAG COUNT ── */
+const _FLAG_METRICS=['Annual Home Starts','2025 Starts w Deako','2026 Starts w Deako','2026 Closes w Deako','Q4 2024 Starts w Deako','Mothly Revenue','Annual Revenue','Standard Pack Revenue'];
+const _FLAG_CARDS=[
+  ['Contract Start/Expiration date','Notes Updated','First PO completed','Onboarding Status','NPS Score'],
+  ['Purchasing PoC','Sales PoC'],
+  ['EC Company','EC PoC','EC Email','EC Phone'],
+  ['Integrator Company','Integrator PoC','Integrator Email','Integrator Phone']
+];
+function updateFlagCount(){
+  let n=0;
+  BUILDERS.forEach(b=>{
+    _FLAG_METRICS.forEach(f=>{ if(!(b[f]||'').trim()) n++; });
+    _FLAG_CARDS.forEach(grp=>{ if(grp.some(f=>!(b[f]||'').trim())) n++; });
+  });
+  const el=document.getElementById('flag-count');
+  if(!el) return;
+  el.textContent='🚩 '+n;
+  el.className=n===0?'zero':'';
 }
 
 function anyBlank(idx, fields){
@@ -647,6 +671,7 @@ function revertToSelected(){
 
 /* ── INIT ── */
 renderSidebar();
+updateFlagCount();
 const _defaultIdx = BUILDERS.findIndex(b => b.name === 'Maronda');
 if(_defaultIdx !== -1) selectBuilder(_defaultIdx);
 document.getElementById('sidebar').addEventListener('mouseleave', revertToSelected);
