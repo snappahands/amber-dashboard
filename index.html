@@ -214,7 +214,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v3.1</div>
+<div id="version-badge">v3.2</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -398,7 +398,7 @@ function eMetric(idx, field, cls=''){
 const _FLAG_METRICS=['Annual Home Starts','2026 Starts w Deako','2025 Closes w Deako','Mothly Revenue','Annual Revenue','Standard Pack Revenue'];
 const _FLAG_CARDS=[
   ['Contract Start/Expiration date','Notes Updated','First PO completed','Onboarding Status','NPS Score'],
-  ['Purchasing PoC','Sales PoC'],
+  ['Purchasing PoC','Sales PoC','Account PoC Email','Account PoC Phone'],
   ['EC Company','EC PoC','EC Email','EC Phone'],
   ['Integrator Company','Integrator PoC','Integrator Email','Integrator Phone'],
   ['Home Owner Data is provided','HST is reaching out post-close'],
@@ -471,10 +471,10 @@ function renderDetail(b, idx=selectedIdx){
     </div>
 
     <div class="section-grid">
-      ${(()=>{ const m=anyBlank(idx,['Contract Start/Expiration date','Notes Updated','First PO completed','Onboarding Status','NPS Score']); return `<div class="info-card acct-details${m?' missing':''}">${m?amberFlag():''}<div class="card-title">Account Details</div>${iRow('Contract',eInline(idx,'Contract Start/Expiration date','e.g. 1.1.25-12.31.27'))}${iRow('Notes Updated',eInline(idx,'Notes Updated','date'))}${iRow('First PO',eInline(idx,'First PO completed','Yes/No'))}${iRow('Onboarding',eInline(idx,'Onboarding Status','status'))}${iRow('NPS Score',eInline(idx,'NPS Score','0-10'))}</div>`; })()}
-      ${(()=>{ const m=anyBlank(idx,['Purchasing PoC','Sales PoC']); return `<div class="info-card acct-contacts${m?' missing':''}">${m?amberFlag():''}<div class="card-title">Account Contacts</div>${iRow('Purchasing PoC',eInline(idx,'Purchasing PoC','name'))}${iRow('Sales PoC',eInline(idx,'Sales PoC','name'))}</div>`; })()}
-      ${(()=>{ const m=anyBlank(idx,['EC Company','EC PoC','EC Email','EC Phone']); return `<div class="full-card ec${m?' missing':''}" style="margin-bottom:0">${m?amberFlag():''}<div class="card-title">Electrician (EC)</div>${iRow('Company',eInline(idx,'EC Company','company name'))}${iRow('Main PoC',eInline(idx,'EC PoC','contact name'))}${iRow('Email',eInline(idx,'EC Email','email address'))}${iRow('Phone',eInline(idx,'EC Phone','phone number'))}</div>`; })()}
-      ${(()=>{ const m=anyBlank(idx,['Integrator Company','Integrator PoC','Integrator Email','Integrator Phone']); return `<div class="full-card integrator${m?' missing':''}" style="margin-bottom:0">${m?amberFlag():''}<div class="card-title">Integrator</div>${iRow('Company',eInline(idx,'Integrator Company','company name'))}${iRow('Main PoC',eInline(idx,'Integrator PoC','contact name'))}${iRow('Email',eInline(idx,'Integrator Email','email address'))}${iRow('Phone',eInline(idx,'Integrator Phone','phone number'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Contract Start/Expiration date','Notes Updated','First PO completed','Onboarding Status','NPS Score']); return `<div class="info-card acct-details${m?' missing':''}">${m?amberFlag():''}<div class="card-title">📋 Account Details</div>${iRow('Contract',eInline(idx,'Contract Start/Expiration date','e.g. 1.1.25-12.31.27'))}${iRow('Notes Updated',eInline(idx,'Notes Updated','date'))}${iRow('First PO',eInline(idx,'First PO completed','Yes/No'))}${iRow('Onboarding',eInline(idx,'Onboarding Status','status'))}${iRow('NPS Score',eInline(idx,'NPS Score','0-10'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Purchasing PoC','Sales PoC','Account PoC Email','Account PoC Phone']); return `<div class="info-card acct-contacts${m?' missing':''}">${m?amberFlag():''}<div class="card-title">👤 Account PoC</div>${iRow('Purchasing PoC',eInline(idx,'Purchasing PoC','name'))}${iRow('Sales PoC',eInline(idx,'Sales PoC','name'))}${iRow('Email',eInline(idx,'Account PoC Email','email address'))}${iRow('Phone',eInline(idx,'Account PoC Phone','phone number'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['EC Company','EC PoC','EC Email','EC Phone']); return `<div class="full-card ec${m?' missing':''}" style="margin-bottom:0">${m?amberFlag():''}<div class="card-title">⚡ Electrician (EC)</div>${iRow('Company',eInline(idx,'EC Company','company name'))}${iRow('Main PoC',eInline(idx,'EC PoC','contact name'))}${iRow('Email',eInline(idx,'EC Email','email address'))}${iRow('Phone',eInline(idx,'EC Phone','phone number'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Integrator Company','Integrator PoC','Integrator Email','Integrator Phone']); return `<div class="full-card integrator${m?' missing':''}" style="margin-bottom:0">${m?amberFlag():''}<div class="card-title">🔌 Integrator</div>${iRow('Company',eInline(idx,'Integrator Company','company name'))}${iRow('Main PoC',eInline(idx,'Integrator PoC','contact name'))}${iRow('Email',eInline(idx,'Integrator Email','email address'))}${iRow('Phone',eInline(idx,'Integrator Phone','phone number'))}</div>`; })()}
     </div>
 
     <div class="section-grid">
