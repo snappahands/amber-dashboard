@@ -214,7 +214,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v2.7</div>
+<div id="version-badge">v2.8</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -426,8 +426,7 @@ function mCard(idx, label, field, valCls=''){
 }
 
 /* ── RENDER DETAIL ── */
-function renderDetail(b){
-  const idx=selectedIdx;
+function renderDetail(b, idx=selectedIdx){
   const bv=bse(b);
   const bClass=bv==='Amber'?'badge badge-amber':bv==='Justin'?'badge badge-justin':'';
   const ci=contractInfo(b);
@@ -657,15 +656,15 @@ document.getElementById('token-input').addEventListener('keydown',function(e){ i
 
 /* ── HOVER PREVIEW ── */
 function previewBuilder(idx){
-  if(_dragIdx!==null) return; // don't preview while dragging
-  renderDetail(BUILDERS[idx]);
+  if(_dragIdx!==null) return;
+  renderDetail(BUILDERS[idx], idx);
   document.getElementById('content').scrollTop=0;
 }
 
 function revertToSelected(){
   if(_dragIdx!==null) return;
   const revertIdx = selectedIdx !== null ? selectedIdx : BUILDERS.findIndex(b=>b.name==='Maronda');
-  if(revertIdx !== -1) renderDetail(BUILDERS[revertIdx]);
+  if(revertIdx !== -1) renderDetail(BUILDERS[revertIdx], revertIdx);
   document.getElementById('content').scrollTop=0;
 }
 
