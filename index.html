@@ -211,7 +211,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v2.5</div>
+<div id="version-badge">v2.6</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -281,7 +281,7 @@ function renderSidebar(){
   filtered.forEach(({b,i})=>{
     const bv=bse(b);
     const tc=bv==='Amber'?'tag-amber':bv==='Justin'?'tag-justin':'';
-    html+=`<div class="builder-item${i===selectedIdx?' active':''}" onclick="selectBuilder(${i})"
+    html+=`<div class="builder-item${i===selectedIdx?' active':''}" onclick="selectBuilder(${i})" onmouseenter="previewBuilder(${i})"
       draggable="true" data-idx="${i}"
       ondragstart="onDragStart(event,${i})"
       ondragover="onDragOver(event)"
@@ -631,10 +631,25 @@ document.getElementById('token-modal').addEventListener('click',function(e){ if(
 // Enter key in token input
 document.getElementById('token-input').addEventListener('keydown',function(e){ if(e.key==='Enter') saveToken(); });
 
+/* ── HOVER PREVIEW ── */
+function previewBuilder(idx){
+  if(_dragIdx!==null) return; // don't preview while dragging
+  renderDetail(BUILDERS[idx]);
+  document.getElementById('content').scrollTop=0;
+}
+
+function revertToSelected(){
+  if(_dragIdx!==null) return;
+  const revertIdx = selectedIdx !== null ? selectedIdx : BUILDERS.findIndex(b=>b.name==='Maronda');
+  if(revertIdx !== -1) renderDetail(BUILDERS[revertIdx]);
+  document.getElementById('content').scrollTop=0;
+}
+
 /* ── INIT ── */
 renderSidebar();
 const _defaultIdx = BUILDERS.findIndex(b => b.name === 'Maronda');
 if(_defaultIdx !== -1) selectBuilder(_defaultIdx);
+document.getElementById('sidebar').addEventListener('mouseleave', revertToSelected);
 </script>
 </body>
 </html>
