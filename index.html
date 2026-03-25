@@ -214,7 +214,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v2.9</div>
+<div id="version-badge">v3.0</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -395,7 +395,7 @@ function eMetric(idx, field, cls=''){
 }
 
 /* ── FLAG COUNT ── */
-const _FLAG_METRICS=['Annual Home Starts','2025 Starts w Deako','2026 Starts w Deako','2026 Closes w Deako','Q4 2024 Starts w Deako','Mothly Revenue','Annual Revenue','Standard Pack Revenue'];
+const _FLAG_METRICS=['Annual Home Starts','2026 Starts w Deako','2025 Closes w Deako','Mothly Revenue','Annual Revenue','Standard Pack Revenue'];
 const _FLAG_CARDS=[
   ['Contract Start/Expiration date','Notes Updated','First PO completed','Onboarding Status','NPS Score'],
   ['Purchasing PoC','Sales PoC'],
@@ -455,10 +455,8 @@ function renderDetail(b, idx=selectedIdx){
 
     <div class="metrics">
       ${mCard(idx,'Annual Starts','Annual Home Starts','blue')}
-      ${mCard(idx,'2025 Starts w/Deako','2025 Starts w Deako')}
-      ${mCard(idx,'2026 Starts w/Deako','2026 Starts w Deako')}
-      ${mCard(idx,'2026 Closes w/Deako','2026 Closes w Deako')}
-      ${mCard(idx,'Q4 2024 Starts','Q4 2024 Starts w Deako')}
+      ${mCard(idx,'2026 Starts','2026 Starts w Deako')}
+      ${mCard(idx,'2025 Closes','2025 Closes w Deako')}
       ${mCard(idx,'Monthly Rev','Mothly Revenue','green')}
       ${mCard(idx,'Annual Rev','Annual Revenue','green')}
       ${mCard(idx,'Pack Revenue','Standard Pack Revenue','green')}
