@@ -68,6 +68,7 @@ body{display:flex;flex-direction:column;height:100vh}
 /* METRICS */
 .metrics{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .metric-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:11px 14px;min-width:100px;flex:1}
+.metric-card.missing{background:#2d0d0d;border-color:#f85149;}
 .metric-label{font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;white-space:nowrap}
 .metric-value{font-size:20px;font-weight:700;color:#e6edf3}
 .metric-value.blue{color:#7ecfe0}
@@ -201,7 +202,7 @@ body{display:flex;flex-direction:column;height:100vh}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v2.1</div>
+<div id="version-badge">v2.2</div>
 
 <!-- Token Setup Modal -->
 <div id="token-modal">
@@ -380,6 +381,11 @@ function eMetric(idx, field, cls=''){
   return `<div class="metric-value${empty?' empty':''} ${cls}" contenteditable="true" data-idx="${idx}" data-field="${esc(field)}" oninput="onEdit(this)">${esc(val)}</div>`;
 }
 
+function mCard(idx, label, field, valCls=''){
+  const missing=!(BUILDERS[idx][field]||'').trim();
+  return `<div class="metric-card${missing?' missing':''}"><div class="metric-label">${label}</div>${eMetric(idx,field,valCls)}</div>`;
+}
+
 /* ── RENDER DETAIL ── */
 function renderDetail(b){
   const idx=selectedIdx;
@@ -410,14 +416,14 @@ function renderDetail(b){
     </div>
 
     <div class="metrics">
-      <div class="metric-card"><div class="metric-label">Annual Starts</div>${eMetric(idx,'Annual Home Starts','blue')}</div>
-      <div class="metric-card"><div class="metric-label">2025 Starts w/Deako</div>${eMetric(idx,'2025 Starts w Deako')}</div>
-      <div class="metric-card"><div class="metric-label">2026 Starts w/Deako</div>${eMetric(idx,'2026 Starts w Deako')}</div>
-      <div class="metric-card"><div class="metric-label">2026 Closes w/Deako</div>${eMetric(idx,'2026 Closes w Deako')}</div>
-      <div class="metric-card"><div class="metric-label">Q4 2024 Starts</div>${eMetric(idx,'Q4 2024 Starts w Deako')}</div>
-      <div class="metric-card"><div class="metric-label">Monthly Rev</div>${eMetric(idx,'Mothly Revenue','green')}</div>
-      <div class="metric-card"><div class="metric-label">Annual Rev</div>${eMetric(idx,'Annual Revenue','green')}</div>
-      <div class="metric-card"><div class="metric-label">Pack Revenue</div>${eMetric(idx,'Standard Pack Revenue','green')}</div>
+      ${mCard(idx,'Annual Starts','Annual Home Starts','blue')}
+      ${mCard(idx,'2025 Starts w/Deako','2025 Starts w Deako')}
+      ${mCard(idx,'2026 Starts w/Deako','2026 Starts w Deako')}
+      ${mCard(idx,'2026 Closes w/Deako','2026 Closes w Deako')}
+      ${mCard(idx,'Q4 2024 Starts','Q4 2024 Starts w Deako')}
+      ${mCard(idx,'Monthly Rev','Mothly Revenue','green')}
+      ${mCard(idx,'Annual Rev','Annual Revenue','green')}
+      ${mCard(idx,'Pack Revenue','Standard Pack Revenue','green')}
     </div>
 
     <div class="status-card">
