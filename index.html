@@ -25,11 +25,6 @@ body{display:flex;flex-direction:column;height:100vh}
 #save-status.error{background:#2d0d0d;color:#f85149;border:1px solid #4d1a1a;cursor:pointer}
 #flag-count{background:#2d0d0d;border:1px solid #f85149;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:800;color:#f85149;white-space:nowrap;letter-spacing:.04em}
 #flag-count.zero{background:#0d2b0d;border-color:#3fb950;color:#3fb950}
-#deploy-btn{background:#0d2b0d;border:1px solid #1a4d1a;border-radius:6px;padding:5px 10px;color:#3fb950;font-size:11px;font-weight:600;cursor:pointer}
-#deploy-btn:hover{border-color:#3fb950;color:#56d971}
-#deploy-btn:disabled{opacity:.5;cursor:default}
-#token-btn{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:5px 10px;color:#8b949e;font-size:11px;cursor:pointer}
-#token-btn:hover{border-color:#7ecfe0;color:#7ecfe0}
 
 /* LAYOUT */
 #main{display:flex;flex:1;overflow:hidden}
@@ -169,21 +164,6 @@ body{display:flex;flex-direction:column;height:100vh}
 /* VERSION BADGE */
 #version-badge{position:fixed;bottom:10px;right:14px;font-size:14px;font-weight:700;color:#7ecfe0;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:4px 12px;z-index:100;pointer-events:none}
 
-/* TOKEN MODAL */
-#token-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center}
-#token-modal.open{display:flex}
-.modal-box{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:28px;max-width:440px;width:90%}
-.modal-box h2{font-size:16px;font-weight:700;color:#e6edf3;margin-bottom:10px}
-.modal-box p{font-size:13px;color:#8b949e;line-height:1.6;margin-bottom:16px}
-.modal-box input{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 12px;color:#c9d1d9;font-size:13px;outline:none;margin-bottom:14px}
-.modal-box input:focus{border-color:#7ecfe0}
-.modal-btns{display:flex;gap:10px;justify-content:flex-end}
-.btn-primary{background:#238636;border:none;border-radius:6px;padding:7px 16px;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
-.btn-primary:hover{background:#2ea043}
-.btn-secondary{background:#21262d;border:1px solid #30363d;border-radius:6px;padding:7px 16px;color:#c9d1d9;font-size:13px;cursor:pointer}
-.btn-secondary:hover{background:#30363d}
-.modal-link{color:#79c0ff;text-decoration:none;font-size:12px}
-.modal-link:hover{text-decoration:underline}
 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px}
@@ -205,8 +185,6 @@ body{display:flex;flex-direction:column;height:100vh}
   <input id="search" type="text" placeholder="Search builders..." oninput="renderSidebar()">
   <div id="flag-count" title="Total missing data flags across all builders">🚩 —</div>
   <div id="save-status" class="idle">● Saved</div>
-  <button id="deploy-btn" onclick="pushLayout()" title="Push index.html to GitHub so colleagues see latest version">↑ Deploy Layout</button>
-  <button id="token-btn" onclick="openTokenModal()" title="Configure GitHub token for auto-save">⚙ GitHub</button>
 </div>
 
 <div id="main">
@@ -216,29 +194,13 @@ body{display:flex;flex-direction:column;height:100vh}
 
 <div id="version-badge">v3.3</div>
 
-<!-- Token Setup Modal -->
-<div id="token-modal">
-  <div class="modal-box">
-    <h2>Connect to GitHub</h2>
-    <p>To auto-save edits directly to GitHub, enter a Personal Access Token with <strong>Contents: Read &amp; Write</strong> permission for the <code>snappahands/amber-dashboard</code> repo.<br><br>
-    <a class="modal-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank">Create a fine-grained token →</a></p>
-    <input id="token-input" type="password" placeholder="github_pat_..." autocomplete="off">
-    <div class="modal-btns">
-      <button class="btn-secondary" onclick="closeTokenModal()">Cancel</button>
-      <button class="btn-primary" onclick="saveToken()">Save Token</button>
-    </div>
-  </div>
-</div>
-
 <script src="data.js"></script>
 <script>
-const REPO_OWNER = 'snappahands';
-const REPO_NAME  = 'amber-dashboard';
-const FILE_PATH  = 'data.js';
+const JSONBIN_KEY = '$2a$10$n3ZhnPN0Xdadh1FWGX2YKeQ1T/bvshlOQLl6VlKelRJmskftR5Q62';
+const JSONBIN_BIN = '69cd569e36566621a86da1bb';
 
 let selectedIdx  = null;
 let _saveTimer   = null;
-let _fileSHA     = null;   // cached from last GitHub fetch
 
 /* ── HELPERS ── */
 function bse(b){ return (b['Builder Success Executive']||'').trim(); }
@@ -501,7 +463,7 @@ function iRow(label, valueHtml){
 function scheduleSave(){
   setSaveStatus('saving');
   clearTimeout(_saveTimer);
-  _saveTimer=setTimeout(pushToGitHub, 1500);
+  _saveTimer=setTimeout(pushToJsonBin, 1500);
 }
 
 function setSaveStatus(state, msg){
@@ -511,135 +473,45 @@ function setSaveStatus(state, msg){
   const labels={
     idle:'● Saved',
     saving:'↑ Saving…',
-    saved:'✓ Saved to GitHub',
+    saved:'✓ Saved',
     error:'✕ Save failed — click to retry'
   };
   el.textContent=msg||labels[state];
   if(state==='saved') setTimeout(()=>setSaveStatus('idle'),3000);
-  if(state==='error') el.onclick=pushToGitHub;
+  if(state==='error') el.onclick=pushToJsonBin;
   else el.onclick=null;
 }
 
-function getToken(){ return localStorage.getItem('gh_token')||''; }
-
-async function pushToGitHub(){
-  const token=getToken();
-  if(!token){ setSaveStatus('error','✕ No GitHub token — click ⚙ to configure'); return; }
-
+async function loadFromJsonBin(){
   try {
-    // 1. Get current SHA (use cached if fresh enough)
-    if(!_fileSHA){
-      const r=await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`,{
-        headers:{Authorization:`token ${token}`, Accept:'application/vnd.github+json'}
-      });
-      if(!r.ok) throw new Error('Could not fetch file from GitHub');
-      const meta=await r.json();
-      _fileSHA=meta.sha;
-    }
-
-    // 2. Build updated data.js content
-    const content='const BUILDERS = '+JSON.stringify(BUILDERS)+';\n';
-
-    // 3. Base64 encode (UTF-8 safe)
-    const encoded=btoa(unescape(encodeURIComponent(content)));
-
-    // 4. Push commit
-    const now=new Date();
-    const ts=now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-    const putRes=await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`,{
-      method:'PUT',
-      headers:{Authorization:`token ${token}`, 'Content-Type':'application/json', Accept:'application/vnd.github+json'},
-      body:JSON.stringify({
-        message:`Dashboard edit: auto-saved ${ts}`,
-        content:encoded,
-        sha:_fileSHA
-      })
+    const r=await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN}/latest`,{
+      headers:{'X-Master-Key':JSONBIN_KEY}
     });
-
-    if(!putRes.ok){
-      const err=await putRes.json();
-      // SHA stale — clear and retry once
-      if(putRes.status===409||putRes.status===422){
-        _fileSHA=null;
-        await pushToGitHub();
-        return;
-      }
-      throw new Error(err.message||putRes.statusText);
+    if(!r.ok) return;
+    const json=await r.json();
+    if(json.record && Array.isArray(json.record) && json.record.length>0 && json.record[0].name!=='placeholder'){
+      BUILDERS.length=0;
+      json.record.forEach(b=>BUILDERS.push(b));
     }
-
-    const result=await putRes.json();
-    _fileSHA=result.content.sha;
-    setSaveStatus('saved');
-
-  } catch(e) {
-    console.error('GitHub save error:', e);
-    setSaveStatus('error', '✕ '+(e.message||'Save failed'));
-  }
-}
-
-/* ── DEPLOY LAYOUT ── */
-let _htmlSHA = null;
-
-async function pushLayout(){
-  const token=getToken();
-  if(!token){ openTokenModal(); return; }
-  const btn=document.getElementById('deploy-btn');
-  btn.textContent='↑ Deploying…';
-  btn.disabled=true;
-  try {
-    // 1. Get current SHA of index.html
-    if(!_htmlSHA){
-      const r=await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/index.html`,{
-        headers:{Authorization:`token ${token}`, Accept:'application/vnd.github+json'}
-      });
-      if(!r.ok) throw new Error('Could not fetch index.html from GitHub');
-      const meta=await r.json();
-      _htmlSHA=meta.sha;
-    }
-    // 2. Fetch the raw local file content via XHR (works on file:// and Pages)
-    const raw=await fetch('index.html').then(r=>r.text());
-    const encoded=btoa(unescape(encodeURIComponent(raw)));
-    const now=new Date();
-    const ts=now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-    const putRes=await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/index.html`,{
-      method:'PUT',
-      headers:{Authorization:`token ${token}`,'Content-Type':'application/json',Accept:'application/vnd.github+json'},
-      body:JSON.stringify({message:`Layout deploy: ${ts}`,content:encoded,sha:_htmlSHA})
-    });
-    if(!putRes.ok){
-      const err=await putRes.json();
-      if(putRes.status===409||putRes.status===422){ _htmlSHA=null; btn.textContent='↑ Deploy Layout'; btn.disabled=false; await pushLayout(); return; }
-      throw new Error(err.message||putRes.statusText);
-    }
-    const result=await putRes.json();
-    _htmlSHA=result.content.sha;
-    btn.textContent='✓ Deployed!';
-    setTimeout(()=>{ btn.textContent='↑ Deploy Layout'; btn.disabled=false; },3000);
   } catch(e){
-    console.error('Deploy error:',e);
-    btn.textContent='✕ Deploy failed';
-    btn.disabled=false;
+    console.warn('JSONBin load failed, using local data.js:', e);
   }
 }
 
-/* ── TOKEN MODAL ── */
-function openTokenModal(){
-  document.getElementById('token-input').value=getToken();
-  document.getElementById('token-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('token-input').focus(),50);
+async function pushToJsonBin(){
+  try {
+    const r=await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},
+      body:JSON.stringify(BUILDERS)
+    });
+    if(!r.ok) throw new Error(`JSONBin error ${r.status}`);
+    setSaveStatus('saved');
+  } catch(e){
+    console.error('JSONBin save error:',e);
+    setSaveStatus('error','✕ '+(e.message||'Save failed'));
+  }
 }
-function closeTokenModal(){ document.getElementById('token-modal').classList.remove('open'); }
-function saveToken(){
-  const t=document.getElementById('token-input').value.trim();
-  if(t) localStorage.setItem('gh_token',t);
-  closeTokenModal();
-  // Test it by pushing if there are pending changes
-  if(document.getElementById('save-status').classList.contains('saving')) pushToGitHub();
-}
-// Close modal on backdrop click
-document.getElementById('token-modal').addEventListener('click',function(e){ if(e.target===this) closeTokenModal(); });
-// Enter key in token input
-document.getElementById('token-input').addEventListener('keydown',function(e){ if(e.key==='Enter') saveToken(); });
 
 /* ── HOVER PREVIEW ── */
 function previewBuilder(idx){
@@ -656,11 +528,14 @@ function revertToSelected(){
 }
 
 /* ── INIT ── */
-renderSidebar();
-updateFlagCount();
-const _defaultIdx = BUILDERS.findIndex(b => b.name === 'Maronda');
-if(_defaultIdx !== -1) selectBuilder(_defaultIdx);
-document.getElementById('sidebar').addEventListener('mouseleave', revertToSelected);
+(async function(){
+  await loadFromJsonBin();
+  renderSidebar();
+  updateFlagCount();
+  const _defaultIdx = BUILDERS.findIndex(b => b.name === 'Maronda');
+  if(_defaultIdx !== -1) selectBuilder(_defaultIdx);
+  document.getElementById('sidebar').addEventListener('mouseleave', revertToSelected);
+})();
 </script>
 </body>
 </html>
