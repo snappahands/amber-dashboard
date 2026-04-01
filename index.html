@@ -390,7 +390,7 @@ function anyBlank(idx, fields){
   return fields.some(f => !(BUILDERS[idx][f]||'').trim());
 }
 function amberFlag(){ return `<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner">👑AMBER</div></div>`; }
-function justinFlag(){ return `<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner flag-justin">JUSTIN</div></div>`; }
+function justinFlag(){ return `<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner flag-justin">☠️JUSTIN</div></div>`; }
 function profFlag(){ return `<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner flag-prof">PROF</div></div>`; }
 function bseFlag(b){ return bse(b)==='Justin' ? justinFlag() : amberFlag(); }
 
