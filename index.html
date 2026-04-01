@@ -68,7 +68,9 @@ body{display:flex;flex-direction:column;height:100vh}
 .metric-card.missing{background:#2d0d0d;border-color:#f85149;position:relative;}
 .missing-flag{position:absolute;top:5px;right:7px;display:flex;align-items:flex-start;gap:0;pointer-events:none}
 .flag-pole{width:2px;height:28px;background:#c9d1d9;border-radius:1px;flex-shrink:0}
-.flag-banner{background:#f85149;color:#fff;font-size:6px;font-weight:900;letter-spacing:.1em;padding:2px 4px;border-radius:0 2px 2px 0;margin-top:2px;transform-origin:left center;animation:flag-wave 1s ease-in-out infinite alternate;line-height:1.2}
+.flag-banner{background:#f472b6;color:#fff;font-size:6px;font-weight:900;letter-spacing:.1em;padding:2px 4px;border-radius:0 2px 2px 0;margin-top:2px;transform-origin:left center;animation:flag-wave 1s ease-in-out infinite alternate;line-height:1.2}
+.flag-banner.flag-justin{background:#4fa8d5}
+.flag-banner.flag-prof{background:#a855f7}
 @keyframes flag-wave{
   0%{transform:skewY(-6deg) scaleX(1)}
   50%{transform:skewY(0deg) scaleX(0.92)}
@@ -382,11 +384,14 @@ function updateFlagCount(){
 function anyBlank(idx, fields){
   return fields.some(f => !(BUILDERS[idx][f]||'').trim());
 }
-function amberFlag(){ return `<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner">AMBER</div></div>`; }
+function amberFlag(){ return `<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner">👑AMBER</div></div>`; }
+function justinFlag(){ return `<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner flag-justin">JUSTIN</div></div>`; }
+function profFlag(){ return `<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner flag-prof">PROF</div></div>`; }
+function bseFlag(b){ return bse(b)==='Justin' ? justinFlag() : amberFlag(); }
 
-function mCard(idx, label, field, valCls=''){
+function mCard(idx, label, field, valCls='', flagType='bse'){
   const missing=!(BUILDERS[idx][field]||'').trim();
-  const flag=missing?`<div class="missing-flag"><div class="flag-pole"></div><div class="flag-banner">AMBER</div></div>`:'';
+  const flag=missing?(flagType==='prof'?profFlag():bseFlag(BUILDERS[idx])):'';
   return `<div class="metric-card${missing?' missing':''}">${flag}<div class="metric-label">${label}</div>${eMetric(idx,field,valCls)}</div>`;
 }
 
@@ -422,8 +427,8 @@ function renderDetail(b, idx=selectedIdx){
       ${mCard(idx,'Annual Starts','Annual Home Starts','blue')}
       ${mCard(idx,'2026 Starts','2026 Starts w Deako')}
       ${mCard(idx,'2025 Closes','2025 Closes w Deako')}
-      ${mCard(idx,'Monthly Rev','Mothly Revenue','green')}
-      ${mCard(idx,'Annual Rev','Annual Revenue','green')}
+      ${mCard(idx,'Monthly Rev','Mothly Revenue','green','prof')}
+      ${mCard(idx,'Annual Rev','Annual Revenue','green','prof')}
       ${mCard(idx,'Pack Revenue','Standard Pack Revenue','green')}
     </div>
 
@@ -433,16 +438,16 @@ function renderDetail(b, idx=selectedIdx){
     </div>
 
     <div class="section-grid">
-      ${(()=>{ const m=anyBlank(idx,['Contract Start/Expiration date','Notes Updated','First PO completed','Onboarding Status','NPS Score']); return `<div class="info-card acct-details${m?' missing':''}">${m?amberFlag():''}<div class="card-title">📋 Account Details</div>${iRow('Contract',eInline(idx,'Contract Start/Expiration date','e.g. 1.1.25-12.31.27'))}${iRow('Notes Updated',eInline(idx,'Notes Updated','date'))}${iRow('First PO',eInline(idx,'First PO completed','Yes/No'))}${iRow('Onboarding',eInline(idx,'Onboarding Status','status'))}${iRow('NPS Score',eInline(idx,'NPS Score','0-10'))}</div>`; })()}
-      ${(()=>{ const m=anyBlank(idx,['Purchasing PoC','Purchasing Email','Purchasing Phone','Sales PoC','Account PoC Email','Account PoC Phone']); return `<div class="info-card acct-contacts${m?' missing':''}">${m?amberFlag():''}<div class="card-title">👤 Account PoC</div>${iRow('Purchasing PoC',eInline(idx,'Purchasing PoC','name'))}${iRow('Purchasing Email',eInline(idx,'Purchasing Email','email address'))}${iRow('Purchasing Phone',eInline(idx,'Purchasing Phone','phone number'))}${iRow('Sales PoC',eInline(idx,'Sales PoC','name'))}${iRow('Sales Email',eInline(idx,'Account PoC Email','email address'))}${iRow('Sales Phone',eInline(idx,'Account PoC Phone','phone number'))}</div>`; })()}
-      ${(()=>{ const m=anyBlank(idx,['EC Company','EC PoC','EC Email','EC Phone']); return `<div class="full-card ec${m?' missing':''}" style="margin-bottom:0">${m?amberFlag():''}<div class="card-title">⚡ Electrician (EC)</div>${iRow('Company',eInline(idx,'EC Company','company name'))}${iRow('Main PoC',eInline(idx,'EC PoC','contact name'))}${iRow('Email',eInline(idx,'EC Email','email address'))}${iRow('Phone',eInline(idx,'EC Phone','phone number'))}</div>`; })()}
-      ${(()=>{ const m=anyBlank(idx,['Integrator Company','Integrator PoC','Integrator Email','Integrator Phone']); return `<div class="full-card integrator${m?' missing':''}" style="margin-bottom:0">${m?amberFlag():''}<div class="card-title">🔌 Integrator</div>${iRow('Company',eInline(idx,'Integrator Company','company name'))}${iRow('Main PoC',eInline(idx,'Integrator PoC','contact name'))}${iRow('Email',eInline(idx,'Integrator Email','email address'))}${iRow('Phone',eInline(idx,'Integrator Phone','phone number'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Contract Start/Expiration date','Notes Updated','First PO completed','Onboarding Status','NPS Score']); return `<div class="info-card acct-details${m?' missing':''}">${m?bseFlag(b):''}<div class="card-title">📋 Account Details</div>${iRow('Contract',eInline(idx,'Contract Start/Expiration date','e.g. 1.1.25-12.31.27'))}${iRow('Notes Updated',eInline(idx,'Notes Updated','date'))}${iRow('First PO',eInline(idx,'First PO completed','Yes/No'))}${iRow('Onboarding',eInline(idx,'Onboarding Status','status'))}${iRow('NPS Score',eInline(idx,'NPS Score','0-10'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Purchasing PoC','Purchasing Email','Purchasing Phone','Sales PoC','Account PoC Email','Account PoC Phone']); return `<div class="info-card acct-contacts${m?' missing':''}">${m?bseFlag(b):''}<div class="card-title">👤 Account PoC</div>${iRow('Purchasing PoC',eInline(idx,'Purchasing PoC','name'))}${iRow('Purchasing Email',eInline(idx,'Purchasing Email','email address'))}${iRow('Purchasing Phone',eInline(idx,'Purchasing Phone','phone number'))}${iRow('Sales PoC',eInline(idx,'Sales PoC','name'))}${iRow('Sales Email',eInline(idx,'Account PoC Email','email address'))}${iRow('Sales Phone',eInline(idx,'Account PoC Phone','phone number'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['EC Company','EC PoC','EC Email','EC Phone']); return `<div class="full-card ec${m?' missing':''}" style="margin-bottom:0">${m?bseFlag(b):''}<div class="card-title">⚡ Electrician (EC)</div>${iRow('Company',eInline(idx,'EC Company','company name'))}${iRow('Main PoC',eInline(idx,'EC PoC','contact name'))}${iRow('Email',eInline(idx,'EC Email','email address'))}${iRow('Phone',eInline(idx,'EC Phone','phone number'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Integrator Company','Integrator PoC','Integrator Email','Integrator Phone']); return `<div class="full-card integrator${m?' missing':''}" style="margin-bottom:0">${m?bseFlag(b):''}<div class="card-title">🔌 Integrator</div>${iRow('Company',eInline(idx,'Integrator Company','company name'))}${iRow('Main PoC',eInline(idx,'Integrator PoC','contact name'))}${iRow('Email',eInline(idx,'Integrator Email','email address'))}${iRow('Phone',eInline(idx,'Integrator Phone','phone number'))}</div>`; })()}
     </div>
 
     <div class="section-grid">
-      ${(()=>{ const m=anyBlank(idx,['Home Owner Data is provided','HST is reaching out post-close']); return `<div class="info-card homeowner${m?' missing':''}">${m?amberFlag():''}<div class="card-title">Homeowner & Data</div>${iRow('HO Data Provided',eInline(idx,'Home Owner Data is provided','yes/no'))}${iRow('HST Post-Close',eInline(idx,'HST is reaching out post-close','yes/no'))}</div>`; })()}
-      ${(()=>{ const m=anyBlank(idx,['Trade Route Backplates','Trade Route Specialty Switches','Specialty Switch Installer','Connectors (backplates)','Deako App Set Up']); return `<div class="info-card trade${m?' missing':''}">${m?amberFlag():''}<div class="card-title">Trade Routes & Install</div>${iRow('Backplates Route',eInline(idx,'Trade Route Backplates','route'))}${iRow('Specialty Route',eInline(idx,'Trade Route Specialty Switches','route'))}${iRow('SS Installer',eInline(idx,'Specialty Switch Installer','who'))}${iRow('Connectors',eInline(idx,'Connectors (backplates)','QW/Uni'))}${iRow('App Set Up',eInline(idx,'Deako App Set Up','who'))}</div>`; })()}
-      ${(()=>{ const m=anyBlank(idx,['Standard Included Packs']); return `<div class="full-card packs${m?' missing':''}" style="margin-bottom:0">${m?amberFlag():''}<div class="card-title">Standard Included Packs</div>${eMulti(idx,'Standard Included Packs','Describe standard packs...')}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Home Owner Data is provided','HST is reaching out post-close']); return `<div class="info-card homeowner${m?' missing':''}">${m?bseFlag(b):''}<div class="card-title">Homeowner & Data</div>${iRow('HO Data Provided',eInline(idx,'Home Owner Data is provided','yes/no'))}${iRow('HST Post-Close',eInline(idx,'HST is reaching out post-close','yes/no'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Trade Route Backplates','Trade Route Specialty Switches','Specialty Switch Installer','Connectors (backplates)','Deako App Set Up']); return `<div class="info-card trade${m?' missing':''}">${m?bseFlag(b):''}<div class="card-title">Trade Routes & Install</div>${iRow('Backplates Route',eInline(idx,'Trade Route Backplates','route'))}${iRow('Specialty Route',eInline(idx,'Trade Route Specialty Switches','route'))}${iRow('SS Installer',eInline(idx,'Specialty Switch Installer','who'))}${iRow('Connectors',eInline(idx,'Connectors (backplates)','QW/Uni'))}${iRow('App Set Up',eInline(idx,'Deako App Set Up','who'))}</div>`; })()}
+      ${(()=>{ const m=anyBlank(idx,['Standard Included Packs']); return `<div class="full-card packs${m?' missing':''}" style="margin-bottom:0">${m?bseFlag(b):''}<div class="card-title">Standard Included Packs</div>${eMulti(idx,'Standard Included Packs','Describe standard packs...')}</div>`; })()}
     </div>
     <div class="full-card opportunity">
       <div class="card-title">Opportunity for Growth</div>
