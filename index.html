@@ -199,7 +199,7 @@ a.ec-sheet-link:hover{text-decoration:underline}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v4.2</div>
+<div id="version-badge">v4.3</div>
 
 <script src="data.js"></script>
 <script>
@@ -429,6 +429,8 @@ function renderDetail(b, idx=selectedIdx){
     </div>
 
     <div class="metrics">
+      ${mCard(idx,'Q1 Starts','Q1 2026 Starts w Deako','blue')}
+      ${mCard(idx,'Q1 Closes','Q1 2026 Closes w Deako','blue')}
       ${mCard(idx,'Annual Starts','Annual Home Starts','blue')}
       ${mCard(idx,'2026 Starts','2026 Starts w Deako')}
       ${mCard(idx,'2025 Closes','2025 Closes w Deako')}
