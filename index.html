@@ -168,6 +168,12 @@ a.ec-sheet-link:hover{text-decoration:underline}
 .editable-inline.tbd{color:#f0a500}
 .editable-inline.partial{color:#e3b341}
 
+/* ADD/DELETE BUTTONS */
+#btn-add-builder{display:block;width:calc(100% - 16px);margin:8px 8px 4px;background:#0d2b0d;border:1px solid #1a4d1a;color:#3fb950;font-size:12px;font-weight:700;padding:7px 10px;border-radius:6px;cursor:pointer;text-align:center;letter-spacing:.04em;transition:all .12s}
+#btn-add-builder:hover{background:#143a14;border-color:#2a6d2a;color:#56d364}
+.btn-delete-builder{background:#2d0d0d;border:1px solid #4d1a1a;color:#f85149;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;letter-spacing:.05em;transition:all .12s;align-self:flex-start;white-space:nowrap}
+.btn-delete-builder:hover{background:#4d1a1a;color:#fff}
+
 /* VERSION BADGE */
 #version-badge{position:fixed;bottom:10px;right:14px;font-size:14px;font-weight:700;color:#7ecfe0;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:4px 12px;z-index:100;pointer-events:none}
 
@@ -199,7 +205,7 @@ a.ec-sheet-link:hover{text-decoration:underline}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v4.3</div>
+<div id="version-badge">v4.4</div>
 
 <script src="data.js"></script>
 <script>
@@ -249,7 +255,8 @@ function renderSidebar(){
     if(q && !b.name.toLowerCase().includes(q)) return false;
     return true;
   });
-  let html=`<div class="sidebar-count">${filtered.length} Builder${filtered.length!==1?'s':''}</div>`;
+  let html=`<button id="btn-add-builder" onclick="addBuilder()">+ Add Builder</button>`;
+  html+=`<div class="sidebar-count">${filtered.length} Builder${filtered.length!==1?'s':''}</div>`;
   filtered.forEach(({b,i})=>{
     const bv=bse(b);
     const tc=bv==='Amber'?'tag-amber':bv==='Justin'?'tag-justin':'';
@@ -272,6 +279,42 @@ function selectBuilder(idx){
   renderSidebar();
   renderDetail(BUILDERS[idx]);
   document.getElementById('content').scrollTop=0;
+}
+
+/* ── ADD / DELETE BUILDER ── */
+function addBuilder(){
+  // Build template from union of keys across existing builders so the new
+  // entry has every field present (empty), and edits work right away.
+  const keys = new Set();
+  BUILDERS.forEach(b => Object.keys(b).forEach(k => keys.add(k)));
+  const fresh = {};
+  keys.forEach(k => { fresh[k] = ''; });
+  fresh.name = 'New Builder';
+  BUILDERS.unshift(fresh);
+  if (selectedIdx !== null) selectedIdx++;
+  selectedIdx = 0;
+  renderSidebar();
+  renderDetail(BUILDERS[0], 0);
+  updateFlagCount();
+  scheduleSave();
+}
+
+function deleteBuilder(idx){
+  const b = BUILDERS[idx];
+  if (!b) return;
+  const name = (b.name || '').trim() || '(unnamed)';
+  if (!confirm(`Permanently delete "${name}"?\n\nThis change saves to the shared dashboard for everyone.`)) return;
+  BUILDERS.splice(idx, 1);
+  if (selectedIdx === idx) selectedIdx = null;
+  else if (selectedIdx !== null && selectedIdx > idx) selectedIdx--;
+  renderSidebar();
+  if (selectedIdx === null) {
+    document.getElementById('content').innerHTML = '<div class="empty-state">← Select a builder</div>';
+  } else {
+    renderDetail(BUILDERS[selectedIdx], selectedIdx);
+  }
+  updateFlagCount();
+  scheduleSave();
 }
 
 /* ── DRAG TO REORDER ── */
@@ -426,6 +469,7 @@ function renderDetail(b, idx=selectedIdx){
           ${onbBadge}
         </div>
       </div>
+      <button class="btn-delete-builder" onclick="deleteBuilder(${idx})" title="Permanently delete this builder">🗑 Delete Builder</button>
     </div>
 
     <div class="metrics">
