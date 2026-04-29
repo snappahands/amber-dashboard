@@ -86,6 +86,8 @@ body{display:flex;flex-direction:column;height:100vh}
 .status-card{background:#161b22;border:1px solid #30363d;border-left:3px solid #f0a500;border-radius:8px;padding:14px 16px;margin-bottom:16px}
 .card-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;font-weight:700}
 .status-card .card-title{color:#f0a500}
+.next-steps-card{background:#161b22;border:1px solid #30363d;border-left:3px solid #58a6ff;border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.next-steps-card .card-title{color:#58a6ff}
 
 /* INFO GRID */
 .section-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;margin-bottom:16px}
@@ -227,7 +229,7 @@ a.ec-sheet-link:hover{text-decoration:underline}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v4.7</div>
+<div id="version-badge">v4.8</div>
 
 <script src="data.js"></script>
 <script>
@@ -486,9 +488,14 @@ function renderDetail(b, idx=selectedIdx){
       ${mCard(idx,'Pack Revenue','Standard Pack Revenue','green')}
     </div>
 
+    <div class="next-steps-card">
+      <div class="card-title">Next Steps</div>
+      ${eMulti(idx,'Next Steps','What needs to happen next...')}
+    </div>
+
     <div class="status-card">
-      <div class="card-title">Status Update</div>
-      ${eMulti(idx,'Status Update','Enter status update...')}
+      <div class="card-title">Completed Tasks</div>
+      ${eMulti(idx,'Status Update','Log completed tasks here...')}
     </div>
 
     <div class="section-grid">
