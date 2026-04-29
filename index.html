@@ -229,7 +229,7 @@ a.ec-sheet-link:hover{text-decoration:underline}
   <div id="content"><div class="empty-state">← Select a builder</div></div>
 </div>
 
-<div id="version-badge">v4.8</div>
+<div id="version-badge">v4.9</div>
 
 <script src="data.js"></script>
 <script>
@@ -553,20 +553,42 @@ function setSaveStatus(state, msg){
   else el.onclick=null;
 }
 
+/* localStorage cache so reloads render instantly. JSONBin fetch happens in
+   the background after first paint and re-renders only if data changed. */
+const CACHE_KEY = 'amber_dashboard_cache_v1';
+
+function _loadCache(){
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) && arr.length > 0 ? arr : null;
+  } catch(_){ return null; }
+}
+function _saveCache(){
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(BUILDERS)); } catch(_){}
+}
+
+// Returns true if the fetch succeeded AND BUILDERS was actually replaced.
 async function loadFromJsonBin(){
   try {
     const r=await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN}/latest`,{
       headers:{'X-Master-Key':JSONBIN_KEY}
     });
-    if(!r.ok) return;
+    if(!r.ok) return false;
     const json=await r.json();
     if(json.record && Array.isArray(json.record) && json.record.length>0 && json.record[0].name!=='placeholder'){
+      const incoming = JSON.stringify(json.record);
+      if (incoming === JSON.stringify(BUILDERS)) return false; // identical — skip re-render
       BUILDERS.length=0;
       json.record.forEach(b=>BUILDERS.push(b));
+      _saveCache();
+      return true;
     }
   } catch(e){
     console.warn('JSONBin load failed, using local data.js:', e);
   }
+  return false;
 }
 
 async function pushToJsonBin(){
@@ -577,6 +599,7 @@ async function pushToJsonBin(){
       body:JSON.stringify(BUILDERS)
     });
     if(!r.ok) throw new Error(`JSONBin error ${r.status}`);
+    _saveCache();
     setSaveStatus('saved');
   } catch(e){
     console.error('JSONBin save error:',e);
@@ -598,14 +621,34 @@ function revertToSelected(){
   document.getElementById('content').scrollTop=0;
 }
 
-/* ── INIT ── */
-(async function(){
-  await loadFromJsonBin();
+/* ── INIT ──
+ * Render immediately from cache (or bundled data.js on first visit), then
+ * fetch JSONBin in the background. If JSONBin returns fresher data, re-render.
+ * This makes page-loads feel instant instead of waiting on the network.
+ */
+(function(){
+  const cached = _loadCache();
+  if (cached){
+    BUILDERS.length = 0;
+    cached.forEach(b => BUILDERS.push(b));
+  }
   renderSidebar();
   updateFlagCount();
   const _defaultIdx = BUILDERS.findIndex(b => b.name === 'Maronda');
   if(_defaultIdx !== -1) selectBuilder(_defaultIdx);
   document.getElementById('sidebar').addEventListener('mouseleave', revertToSelected);
+
+  loadFromJsonBin().then(changed => {
+    if (!changed) return;
+    renderSidebar();
+    updateFlagCount();
+    if (selectedIdx !== null && BUILDERS[selectedIdx]){
+      renderDetail(BUILDERS[selectedIdx], selectedIdx);
+    } else {
+      const idx = BUILDERS.findIndex(b => b.name === 'Maronda');
+      if (idx !== -1) selectBuilder(idx);
+    }
+  });
 })();
 </script>
 </body>
